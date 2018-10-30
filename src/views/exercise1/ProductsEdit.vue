@@ -41,7 +41,7 @@ export default {
       appProductPriceKey: "price",
       appProductImageUrlKey: "image_url",
       appProductDescriptionKey: "description",
-      product: {},
+      product: { id: 0 },
       errors: []
     };
   },
