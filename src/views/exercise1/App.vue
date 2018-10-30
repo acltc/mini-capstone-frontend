@@ -21,6 +21,13 @@
   </div>
 </template>
 
+<style>
+body {
+  background: url("../../assets/gplaypattern.png");
+}
+</style>
+
+
 <script>
 export default {
   data: function() {
