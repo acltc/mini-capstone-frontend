@@ -22,30 +22,49 @@ import axios from "axios";
 export default {
   data: function() {
     return {
-      appBaseUrl: "http://localhost:3000/api",
-      appProductUrl: "/products",
-      appProductNameKey: "name",
-      appProductPriceKey: "price",
-      appProductImageUrlKey: "image_url",
-      appProductDescriptionKey: "description",
       products: []
     };
   },
+  props: ["appConfig"],
   created: function() {
-    axios.get(this.appBaseUrl + this.appProductUrl).then(response => {
-      this.products = this.formatProductResponse(response.data);
-      console.log("products", this.products);
-    });
+    axios
+      .get(this.appConfig.domain + this.appConfig.productsUrl)
+      .then(response => {
+        this.products = this.formatProductResponse(response.data);
+      })
+      .catch(error => {
+        this.$emit("showError", [
+          this.appConfig.domain,
+          this.appConfig.productsUrl
+        ]);
+      });
   },
   methods: {
     formatProductResponse: function(data) {
+      var missingKeys = [];
+      var requiredKeys = [
+        this.appConfig.productsIdKey,
+        this.appConfig.productsNameKey,
+        this.appConfig.productsPriceKey,
+        this.appConfig.productsImageUrlKey,
+        this.appConfig.productsDescriptionKey
+      ];
+      requiredKeys.forEach(requiredKey => {
+        if (data[0][requiredKey] === undefined) {
+          missingKeys.push(requiredKey);
+        }
+      });
+      if (missingKeys.length > 0) {
+        this.$emit("showError", missingKeys);
+        return;
+      }
       return data.map(product => {
         return {
-          id: product["id"],
-          name: product[this.appProductNameKey],
-          price: product[this.appProductPriceKey],
-          image_url: product[this.appProductImageUrlKey],
-          description: product[this.appProductDescriptionKey]
+          id: product[this.appConfig.productsIdKey],
+          name: product[this.appConfig.productsNameKey],
+          price: product[this.appConfig.productsPriceKey],
+          image_url: product[this.appConfig.productsImageUrlKey],
+          description: product[this.appConfig.productsDescriptionKey]
         };
       });
     }

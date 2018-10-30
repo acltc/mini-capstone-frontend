@@ -51,38 +51,62 @@ import axios from "axios";
 export default {
   data: function() {
     return {
-      appBaseUrl: "http://localhost:3000/api",
-      appProductUrl: "/products",
-      appProductNameKey: "name",
-      appProductPriceKey: "price",
-      appProductImageUrlKey: "image_url",
-      appProductDescriptionKey: "description",
       product: { id: 0 },
       errors: []
     };
   },
+  props: ["appConfig"],
   created: function() {
     axios
-      .get(this.appBaseUrl + this.appProductUrl + "/" + this.$route.params.id)
+      .get(
+        this.appConfig.domain +
+          this.appConfig.productsUrl +
+          "/" +
+          this.$route.params.id
+      )
       .then(response => {
         this.product = this.formatProductResponse(response.data);
-        console.log("product", this.product);
+      })
+      .catch(error => {
+        this.$emit("showError", [
+          this.appConfig.domain,
+          this.appConfig.productsUrl
+        ]);
       });
   },
   methods: {
     formatProductResponse: function(data) {
+      var missingKeys = [];
+      var requiredKeys = [
+        this.appConfig.productsIdKey,
+        this.appConfig.productsNameKey,
+        this.appConfig.productsPriceKey,
+        this.appConfig.productsImageUrlKey,
+        this.appConfig.productsDescriptionKey
+      ];
+      requiredKeys.forEach(requiredKey => {
+        if (data[requiredKey] === undefined) {
+          missingKeys.push(requiredKey);
+        }
+      });
+      if (missingKeys.length > 0) {
+        this.$emit("showError", missingKeys);
+        return;
+      }
       return {
-        id: data["id"],
-        name: data[this.appProductNameKey],
-        price: data[this.appProductPriceKey],
-        image_url: data[this.appProductImageUrlKey],
-        description: data[this.appProductDescriptionKey]
+        id: data[this.appConfig.productsIdKey],
+        name: data[this.appConfig.productsNameKey],
+        price: data[this.appConfig.productsPriceKey],
+        image_url: data[this.appConfig.productsImageUrlKey],
+        description: data[this.appConfig.productsDescriptionKey]
       };
     },
     deleteProduct: function(product) {
       console.log("delete", product);
       axios
-        .delete(this.appBaseUrl + this.appProductUrl + "/" + product.id)
+        .delete(
+          this.appConfig.domain + this.appConfig.productsUrl + "/" + product.id
+        )
         .then(response => {
           $("#deleteModal").modal("hide");
           this.$router.push({

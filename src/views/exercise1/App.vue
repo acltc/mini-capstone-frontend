@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <router-link :to="{ name: 'exercise1-home'}" class="navbar-brand">{{ appName }}</router-link>
+      <router-link :to="{ name: 'exercise1-home'}" class="navbar-brand">{{ appConfig.name }}</router-link>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -17,7 +17,36 @@
         </ul>
       </div>
     </nav>
-    <router-view ></router-view>
+    <router-view
+      v-bind:appConfig="appConfig"
+      v-on:showError="showError"
+    />
+
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Error with app configuration</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div v-for="(value, key) in appConfig" class="form-group row">
+              <label :for='key' class="col-sm-6 col-form-label" v-bind:class='{"text-danger": missingKeys.includes(value)}'>{{key}}</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" v-bind:class='{"is-invalid": missingKeys.includes(value)}' :id='key' v-model='appConfig[key]'>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button @click="saveConfig" type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -29,14 +58,48 @@ body {
 
 
 <script>
+/* global $ */
 export default {
   data: function() {
     return {
-      appName: "Mini-capstone"
+      appConfig: {
+        name: "Mini-capstone",
+        domain: "http://localhost:3000",
+        productsUrl: "/api/products",
+        productsIdKey: "id",
+        productsNameKey: "name",
+        productsPriceKey: "price",
+        productsImageUrlKey: "image_url",
+        productsDescriptionKey: "description"
+      },
+      missingKeys: []
     };
   },
-  created: function() {},
-  methods: {},
+  created: function() {
+    this.configureFromLocalStorage();
+  },
+  methods: {
+    configureFromLocalStorage: function() {
+      Object.keys(this.appConfig).forEach(key => {
+        var value = localStorage.getItem(key);
+        if (value === null) {
+          localStorage.setItem(key, this.appConfig[key]);
+        } else {
+          this.appConfig[key] = value;
+        }
+      });
+    },
+    showError: function(missingKeys) {
+      this.missingKeys = missingKeys;
+      $("#errorModal").modal("show");
+    },
+    saveConfig: function() {
+      Object.keys(this.appConfig).forEach(key => {
+        localStorage.setItem(key, this.appConfig[key]);
+      });
+      location.reload();
+    }
+  },
   computed: {}
 };
 </script>

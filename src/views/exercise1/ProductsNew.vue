@@ -35,12 +35,6 @@ import axios from "axios";
 export default {
   data: function() {
     return {
-      appBaseUrl: "http://localhost:3000/api",
-      appProductUrl: "/products",
-      appProductNameKey: "name",
-      appProductPriceKey: "price",
-      appProductImageUrlKey: "image_url",
-      appProductDescriptionKey: "description",
       name: "",
       price: "",
       image_url: "",
@@ -48,6 +42,7 @@ export default {
       errors: []
     };
   },
+  props: ["appConfig"],
   created: function() {},
   methods: {
     submit: function() {
@@ -58,7 +53,7 @@ export default {
         description: this.description
       };
       axios
-        .post(this.appBaseUrl + this.appProductUrl, params)
+        .post(this.appConfig.domain + this.appConfig.productsUrl, params)
         .then(response => {
           this.$router.push({
             name: "exercise1-products-show",
