@@ -1,0 +1,102 @@
+<template>
+  <div class="home">
+    <div class="container">
+      <h1>Products</h1>
+      <a href="/"></a>
+      <router-link :to="{ name: 'exercise2-products-index', query: {sort: 'price', sort_order: 'asc'}}" append class="btn btn-light">Sort by lowest price</router-link>
+      <router-link :to="{ name: 'exercise2-products-index', query: {sort: 'price', sort_order: 'desc'}}" append class="btn btn-light">Sort by highest price</router-link>
+      <router-link :to="{ name: 'exercise2-products-index', query: {discount: true}}" append class="btn btn-light">Show only discounted</router-link>
+      <router-link :to="{ name: 'exercise2-products-index'}" append class="btn btn-light">Show all</router-link>
+      <div class="card-columns">
+        <div v-for="product in products" class="card">
+          <img class="card-img-top" v-bind:src="product.image_url" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <h6>{{ product.price }}</h6>
+            <p class="card-text">{{ product.description | truncate }}</p>
+            <router-link :to="{ name: 'exercise2-products-show', params: {id: product.id}}" append class="btn btn-info">More info</router-link>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+
+export default {
+  data: function() {
+    return {
+      products: []
+    };
+  },
+  props: ["appConfig"],
+  created: function() {
+    this.requestProducts();
+  },
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.requestProducts();
+  },
+  methods: {
+    requestProducts: function() {
+      var queryString =
+        this.$route.fullPath.split("?").length > 1
+          ? "?" + this.$route.fullPath.split("?")[1]
+          : "";
+      axios
+        .get(this.appConfig.domain + this.appConfig.productsUrl + queryString)
+        .then(response => {
+          this.products = this.formatProductResponse(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+          this.$emit("showError", [
+            this.appConfig.domain,
+            this.appConfig.productsUrl
+          ]);
+        });
+    },
+    formatProductResponse: function(data) {
+      if (data.length === 0) {
+        return;
+      }
+      var missingKeys = [];
+      var requiredKeys = [
+        this.appConfig.productsIdKey,
+        this.appConfig.productsNameKey,
+        this.appConfig.productsPriceKey,
+        this.appConfig.productsImageUrlKey,
+        this.appConfig.productsDescriptionKey
+      ];
+      requiredKeys.forEach(requiredKey => {
+        if (data[0][requiredKey] === undefined) {
+          missingKeys.push(requiredKey);
+        }
+      });
+      if (missingKeys.length > 0) {
+        this.$emit("showError", missingKeys);
+        return;
+      }
+      return data.map(product => {
+        return {
+          id: product[this.appConfig.productsIdKey],
+          name: product[this.appConfig.productsNameKey],
+          price: product[this.appConfig.productsPriceKey],
+          image_url: product[this.appConfig.productsImageUrlKey],
+          description: product[this.appConfig.productsDescriptionKey]
+        };
+      });
+    }
+  },
+  filters: {
+    truncate: function(text) {
+      var maxLength = 120;
+      return text.length < maxLength
+        ? text
+        : text.substring(0, maxLength - 3) + "...";
+    }
+  }
+};
+</script>
