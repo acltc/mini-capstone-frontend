@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <div class="container">
-      <h1>{{ product.name }}</h1>
       <ul>
         <li class="text-danger" v-for="error in errors">{{ error }}</li>
       </ul>
@@ -10,7 +9,16 @@
           <img :src="product.image_url" alt="" class="w-100">
         </div>
         <div class="col-9">
-          <p>{{product.description}}</p>
+          <h1>{{ product.name }}</h1>
+          <p class="lead">{{product.description}}</p>
+          <table class="table table-hover">
+            <tbody>
+              <tr v-for="(value, key) in originalProductData">
+                <td><small>{{key}}</small></td>
+                <td><small>{{value}}</small></td>
+              </tr>
+            </tbody>
+          </table>
           <router-link :to="{ name: 'exercise2-products-edit', params: {id: product.id} }" class="btn btn-primary mr-1">Edit product</router-link>
           <button type="button" class="btn btn-warning mr-1" data-toggle="modal" data-target="#deleteModal">
             Delete product
@@ -52,6 +60,7 @@ export default {
   data: function() {
     return {
       product: { id: 0 },
+      originalProductData: {},
       errors: []
     };
   },
@@ -66,6 +75,7 @@ export default {
       )
       .then(response => {
         this.product = this.formatProductResponse(response.data);
+        this.originalProductData = response.data;
       })
       .catch(error => {
         this.$emit("showError", [
