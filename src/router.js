@@ -24,7 +24,7 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
-      path: "/fdsleiwoiefjw",
+      path: "/restful-routes",
       component: Exercise1App,
       children: [
         {
@@ -55,7 +55,7 @@ export default new Router({
       ]
     },
     {
-      path: "/adafeafesf",
+      path: "/active-record-queries",
       component: Exercise2App,
       children: [
         {
@@ -86,7 +86,7 @@ export default new Router({
       ]
     },
     {
-      path: "/qwerewr",
+      path: "/model-associations",
       component: Exercise3App,
       children: [
         {
