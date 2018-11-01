@@ -13,6 +13,12 @@ import Exercise2ProductsShow from "./views/exercise2/ProductsShow.vue";
 import Exercise2ProductsNew from "./views/exercise2/ProductsNew.vue";
 import Exercise2ProductsEdit from "./views/exercise2/ProductsEdit.vue";
 
+import Exercise3App from "./views/exercise3/App.vue";
+import Exercise3ProductsIndex from "./views/exercise3/ProductsIndex.vue";
+import Exercise3ProductsShow from "./views/exercise3/ProductsShow.vue";
+import Exercise3ProductsNew from "./views/exercise3/ProductsNew.vue";
+import Exercise3ProductsEdit from "./views/exercise3/ProductsEdit.vue";
+
 Vue.use(Router);
 
 export default new Router({
@@ -76,6 +82,37 @@ export default new Router({
           path: "products/:id/edit",
           component: Exercise2ProductsEdit,
           name: "exercise2-products-edit"
+        }
+      ]
+    },
+    {
+      path: "/qwerewr",
+      component: Exercise3App,
+      children: [
+        {
+          path: "",
+          component: Exercise3ProductsIndex,
+          name: "exercise3-home"
+        },
+        {
+          path: "products",
+          component: Exercise3ProductsIndex,
+          name: "exercise3-products-index"
+        },
+        {
+          path: "products/new",
+          component: Exercise3ProductsNew,
+          name: "exercise3-products-new"
+        },
+        {
+          path: "products/:id",
+          component: Exercise3ProductsShow,
+          name: "exercise3-products-show"
+        },
+        {
+          path: "products/:id/edit",
+          component: Exercise3ProductsEdit,
+          name: "exercise3-products-edit"
         }
       ]
     }
