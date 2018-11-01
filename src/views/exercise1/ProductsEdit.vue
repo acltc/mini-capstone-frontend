@@ -1,5 +1,14 @@
 <template>
   <div class="home">
+    <a class="btn btn-outline-info m-3 float-right" data-toggle="collapse" href="#collapseDebugInfo" role="button" aria-expanded="false" aria-controls="collapseDebugInfo">
+      &#9432;
+    </a>
+    <div class="collapse" id="collapseDebugInfo">
+      <div class="card card-body">
+        <p><strong>Data sending to</strong>: PATCH {{appConfig.domain}}{{appConfig.productsUrl}}/{{$route.params.id}}</p>
+        <p><strong>Using params keys</strong>: name, price, image_url, description</p>
+      </div>
+    </div>
     <div class="container">
       <form v-on:submit.prevent="submit()">
         <h1>Edit product</h1>

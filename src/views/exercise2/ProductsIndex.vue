@@ -1,5 +1,14 @@
 <template>
   <div class="home">
+    <a class="btn btn-outline-info m-3 float-right" data-toggle="collapse" href="#collapseDebugInfo" role="button" aria-expanded="false" aria-controls="collapseDebugInfo">
+      &#9432;
+    </a>
+    <div class="collapse" id="collapseDebugInfo">
+      <div class="card card-body">
+        <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.productsUrl}}</p>
+        <p><strong>Using keys</strong>: {{appConfig.productsIdKey}}, {{appConfig.productsNameKey}}, {{appConfig.productsPriceKey}}, {{appConfig.productsImageUrlKey}}, {{appConfig.productsDescriptionKey}}</p>
+      </div>
+    </div>
     <div class="container">
       <h1>Products</h1>
       <a href="/"></a>
