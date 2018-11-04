@@ -19,6 +19,15 @@ import Exercise3ProductsShow from "./views/exercise3/ProductsShow.vue";
 import Exercise3ProductsNew from "./views/exercise3/ProductsNew.vue";
 import Exercise3ProductsEdit from "./views/exercise3/ProductsEdit.vue";
 
+import Exercise4App from "./views/exercise4/App.vue";
+import Exercise4ProductsIndex from "./views/exercise4/ProductsIndex.vue";
+import Exercise4ProductsShow from "./views/exercise4/ProductsShow.vue";
+import Exercise4ProductsNew from "./views/exercise4/ProductsNew.vue";
+import Exercise4ProductsEdit from "./views/exercise4/ProductsEdit.vue";
+import Exercise4Signup from "./views/exercise4/Signup.vue";
+import Exercise4Login from "./views/exercise4/Login.vue";
+import Exercise4Logout from "./views/exercise4/Logout.vue";
+
 Vue.use(Router);
 
 export default new Router({
@@ -113,6 +122,52 @@ export default new Router({
           path: "products/:id/edit",
           component: Exercise3ProductsEdit,
           name: "exercise3-products-edit"
+        }
+      ]
+    },
+    {
+      path: "/authentication",
+      component: Exercise4App,
+      children: [
+        {
+          path: "",
+          component: Exercise4ProductsIndex,
+          name: "exercise4-home"
+        },
+        {
+          path: "products",
+          component: Exercise4ProductsIndex,
+          name: "exercise4-products-index"
+        },
+        {
+          path: "products/new",
+          component: Exercise4ProductsNew,
+          name: "exercise4-products-new"
+        },
+        {
+          path: "products/:id",
+          component: Exercise4ProductsShow,
+          name: "exercise4-products-show"
+        },
+        {
+          path: "products/:id/edit",
+          component: Exercise4ProductsEdit,
+          name: "exercise4-products-edit"
+        },
+        {
+          path: "signup",
+          component: Exercise4Signup,
+          name: "exercise4-signup"
+        },
+        {
+          path: "login",
+          component: Exercise4Login,
+          name: "exercise4-login"
+        },
+        {
+          path: "logout",
+          component: Exercise4Logout,
+          name: "exercise4-logout"
         }
       ]
     }
