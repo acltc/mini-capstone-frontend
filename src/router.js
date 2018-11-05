@@ -30,6 +30,17 @@ import Exercise4Signup from "./views/exercise4/Signup.vue";
 import Exercise4Login from "./views/exercise4/Login.vue";
 import Exercise4Logout from "./views/exercise4/Logout.vue";
 
+import Exercise5App from "./views/exercise5/App.vue";
+import Exercise5ProductsIndex from "./views/exercise5/ProductsIndex.vue";
+import Exercise5ProductsShow from "./views/exercise5/ProductsShow.vue";
+import Exercise5ProductsNew from "./views/exercise5/ProductsNew.vue";
+import Exercise5ProductsEdit from "./views/exercise5/ProductsEdit.vue";
+import Exercise5OrdersIndex from "./views/exercise5/OrdersIndex.vue";
+import Exercise5OrdersShow from "./views/exercise5/OrdersShow.vue";
+import Exercise5Signup from "./views/exercise5/Signup.vue";
+import Exercise5Login from "./views/exercise5/Login.vue";
+import Exercise5Logout from "./views/exercise5/Logout.vue";
+
 Vue.use(Router);
 
 export default new Router({
@@ -180,6 +191,62 @@ export default new Router({
           path: "logout",
           component: Exercise4Logout,
           name: "exercise4-logout"
+        }
+      ]
+    },
+    {
+      path: "/has-many-through",
+      component: Exercise5App,
+      children: [
+        {
+          path: "",
+          component: Exercise5ProductsIndex,
+          name: "exercise5-home"
+        },
+        {
+          path: "products",
+          component: Exercise5ProductsIndex,
+          name: "exercise5-products-index"
+        },
+        {
+          path: "products/new",
+          component: Exercise5ProductsNew,
+          name: "exercise5-products-new"
+        },
+        {
+          path: "products/:id",
+          component: Exercise5ProductsShow,
+          name: "exercise5-products-show"
+        },
+        {
+          path: "products/:id/edit",
+          component: Exercise5ProductsEdit,
+          name: "exercise5-products-edit"
+        },
+        {
+          path: "orders",
+          component: Exercise5OrdersIndex,
+          name: "exercise5-orders-index"
+        },
+        {
+          path: "orders/:id",
+          component: Exercise5OrdersShow,
+          name: "exercise5-orders-show"
+        },
+        {
+          path: "signup",
+          component: Exercise5Signup,
+          name: "exercise5-signup"
+        },
+        {
+          path: "login",
+          component: Exercise5Login,
+          name: "exercise5-login"
+        },
+        {
+          path: "logout",
+          component: Exercise5Logout,
+          name: "exercise5-logout"
         }
       ]
     }
