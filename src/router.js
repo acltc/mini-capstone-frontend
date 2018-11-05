@@ -24,6 +24,8 @@ import Exercise4ProductsIndex from "./views/exercise4/ProductsIndex.vue";
 import Exercise4ProductsShow from "./views/exercise4/ProductsShow.vue";
 import Exercise4ProductsNew from "./views/exercise4/ProductsNew.vue";
 import Exercise4ProductsEdit from "./views/exercise4/ProductsEdit.vue";
+import Exercise4OrdersIndex from "./views/exercise4/OrdersIndex.vue";
+import Exercise4OrdersShow from "./views/exercise4/OrdersShow.vue";
 import Exercise4Signup from "./views/exercise4/Signup.vue";
 import Exercise4Login from "./views/exercise4/Login.vue";
 import Exercise4Logout from "./views/exercise4/Logout.vue";
@@ -153,6 +155,16 @@ export default new Router({
           path: "products/:id/edit",
           component: Exercise4ProductsEdit,
           name: "exercise4-products-edit"
+        },
+        {
+          path: "orders",
+          component: Exercise4OrdersIndex,
+          name: "exercise4-orders-index"
+        },
+        {
+          path: "orders/:id",
+          component: Exercise4OrdersShow,
+          name: "exercise4-orders-show"
         },
         {
           path: "signup",

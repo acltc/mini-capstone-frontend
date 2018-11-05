@@ -33,6 +33,15 @@
               <span class="sr-only">Next</span>
             </a>
           </div>
+          <div class="card mt-4">
+            <div class="card-body">
+              <form v-on:submit.prevent="submit()" class="mb-4">
+                <label>Quantity:</label>
+                <input v-model="quantity" type="number" class="form-control">
+                <input type="submit" class="btn btn-primary mt-2" value="Buy now!">
+              </form>
+            </div>
+          </div>
         </div>
         <div class="col-9">
           <h1>{{ product.name }}</h1>
@@ -99,6 +108,7 @@ export default {
     return {
       product: { id: 0 },
       originalProductData: {},
+      quantity: null,
       errors: []
     };
   },
@@ -176,6 +186,21 @@ export default {
         })
         .catch(error => {
           this.errors = error.response.data.errors;
+        });
+    },
+    submit: function() {
+      var params = {
+        product_id: this.$route.params.id,
+        quantity: this.quantity
+      };
+      axios
+        .post(this.appConfig.domain + this.appConfig.ordersUrl, params)
+        .then(response => {
+          this.quantity = null;
+          this.$router.push({
+            name: "exercise4-orders-show",
+            params: { id: response.data.id }
+          });
         });
     }
   }

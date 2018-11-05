@@ -17,6 +17,12 @@
           <li class="nav-item">
             <span class="nav-link disabled"> | </span>
           </li>
+          <li class="nav-item">
+            <router-link :to="{ name: 'exercise4-orders-index'}" class="nav-link">Orders</router-link>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link disabled"> | </span>
+          </li>
           <li v-if="!loggedIn()" class="nav-item">
             <router-link :to="{ name: 'exercise4-signup' }" class="nav-link">Signup</router-link>
           </li>
@@ -93,7 +99,14 @@ export default {
         imagesUrlKey: "url",
         suppliersUrl: "/api/suppliers",
         suppliersIdKey: "id",
-        suppliersNameKey: "name"
+        suppliersNameKey: "name",
+        ordersUrl: "/api/orders",
+        ordersIdKey: "id",
+        ordersQuantityKey: "quantity",
+        ordersSubtotalKey: "subtotal",
+        ordersTaxKey: "tax",
+        ordersTotalKey: "total",
+        ordersProductKey: "product"
       },
       missingKeys: [],
       searchTerms: ""
