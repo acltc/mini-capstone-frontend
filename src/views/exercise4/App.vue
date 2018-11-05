@@ -14,6 +14,9 @@
           <li class="nav-item">
             <router-link :to="{ name: 'exercise4-products-new' }" class="nav-link">New product</router-link>
           </li>
+          <li class="nav-item">
+            <span class="nav-link disabled"> | </span>
+          </li>
           <li v-if="!loggedIn()" class="nav-item">
             <router-link :to="{ name: 'exercise4-signup' }" class="nav-link">Signup</router-link>
           </li>
