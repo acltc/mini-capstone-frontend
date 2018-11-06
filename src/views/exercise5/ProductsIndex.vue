@@ -21,6 +21,14 @@
           <img class="card-img-top" v-bind:src="getPrimaryImage(product)" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">{{ product.name }}</h5>
+            <router-link
+              v-for="category in product.categories"
+              :to="{ name: 'exercise5-products-index', query: {category: category.name}}"
+              append
+              class="d-inline-block mr-2 mb-3"
+            >
+              {{category.name}}
+            </router-link>
             <h6>{{ product.price }}</h6>
             <p class="card-text">{{ product.description | truncate }}</p>
             <router-link :to="{ name: 'exercise5-products-show', params: {id: product.id}}" append class="btn btn-info">More info</router-link>
@@ -98,6 +106,21 @@ export default {
           }
         }
       }
+      var validCategories = true;
+      for (i = 0; i < data.length; i++) {
+        var categories = data[i]["categories"];
+        if (categories === undefined) {
+          validCategories = false;
+          break;
+        } else {
+          for (j = 0; j < categories.length; j++) {
+            if (categories[j]["name"] === undefined) {
+              validCategories = false;
+              break;
+            }
+          }
+        }
+      }
       return data.map(product => {
         return {
           id: product[this.appConfig.productsIdKey],
@@ -109,7 +132,8 @@ export default {
               url: image[this.appConfig.imagesUrlKey]
             };
           }),
-          description: product[this.appConfig.productsDescriptionKey]
+          description: product[this.appConfig.productsDescriptionKey],
+          categories: validCategories ? product["categories"] : []
         };
       });
     },
