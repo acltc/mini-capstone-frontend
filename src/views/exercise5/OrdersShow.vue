@@ -6,39 +6,23 @@
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
         <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.ordersUrl}}/{{$route.params.id}}</p>
-        <p><strong>Using keys</strong>: {{appConfig.ordersIdKey}}, {{appConfig.ordersQuantityKey}}, {{appConfig.ordersSubtotalKey}}, {{appConfig.ordersTaxKey}}, {{appConfig.ordersTotalKey}}, {{appConfig.ordersProductKey}} (an object with a key of {{appConfig.productsNameKey}})</p>
+        <p><strong>Using keys</strong>: {{appConfig.ordersIdKey}}, {{appConfig.ordersSubtotalKey}}, {{appConfig.ordersTaxKey}}, {{appConfig.ordersTotalKey}}, {{appConfig.ordersCartedProductsKey}} (an array of objects with keys of quantity and product)</p>
       </div>
     </div>
     <div class="container">
-      <h1>Order info</h1>
-      <table class="table table-hover">
-        <colgroup>
-           <col span="1" style="width: 15%;">
-           <col span="1" style="width: 85%;">
-        </colgroup>
-        <tbody>
-          <tr>
-            <th scope="row">Product</th>
-            <td>{{order.product.name}}</td>
-          </tr>
-          <tr>
-            <th scope="row">Quantity</th>
-            <td>{{order.quantity}}</td>
-          </tr>
-          <tr>
-            <th scope="row">Subtotal</th>
-            <td>{{order.subtotal}}</td>
-          </tr>
-          <tr>
-            <th scope="row">Tax</th>
-            <td>{{order.tax}}</td>
-          </tr>
-          <tr>
-            <th scope="row">Total</th>
-            <td>{{order.total}}</td>
-          </tr>
-        </tbody>
-      </table>
+      <h1>Order #{{order.id}}</h1>
+      <hr>
+      <div v-for="cartedProduct in order.cartedProducts">
+        <p>
+          {{cartedProduct.quantity}} x
+          <span v-if="cartedProduct.product">{{cartedProduct.product.name}}</span>
+          <span v-else>Product id {{cartedProduct.product_id}}</span>
+        </p>
+      </div>
+      <hr>
+      <p>Subtotal: {{order.subtotal}}</p>
+      <p>Tax: {{order.tax}}</p>
+      <p>Total: {{order.total}}</p>
       <router-link :to="{ name: 'exercise5-products-index' }" class="btn btn-primary">Back to all products</router-link>
     </div>
   </div>
@@ -95,11 +79,10 @@ export default {
       var missingKeys = [];
       var requiredKeys = [
         this.appConfig.ordersIdKey,
-        this.appConfig.ordersQuantityKey,
+        this.appConfig.ordersCartedProductsKey,
         this.appConfig.ordersSubtotalKey,
         this.appConfig.ordersTaxKey,
-        this.appConfig.ordersTotalKey,
-        this.appConfig.ordersProductKey
+        this.appConfig.ordersTotalKey
       ];
       requiredKeys.forEach(requiredKey => {
         if (data[requiredKey] === undefined) {
@@ -110,22 +93,12 @@ export default {
         this.$emit("showError", missingKeys);
         return {};
       }
-      if (
-        data[this.appConfig.ordersProductKey][
-          this.appConfig.productsNameKey
-        ] === undefined
-      ) {
-        missingKeys.push(this.appConfig.productsNameKey);
-        this.$emit("showError", missingKeys);
-        return {};
-      }
       return {
         id: data[this.appConfig.ordersIdKey],
-        quantity: data[this.appConfig.ordersQuantityKey],
+        cartedProducts: data[this.appConfig.ordersCartedProductsKey],
         subtotal: data[this.appConfig.ordersSubtotalKey],
         tax: data[this.appConfig.ordersTaxKey],
-        total: data[this.appConfig.ordersTotalKey],
-        product: data[this.appConfig.ordersProductKey]
+        total: data[this.appConfig.ordersTotalKey]
       };
     },
     deleteProduct: function(product) {

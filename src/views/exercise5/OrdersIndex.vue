@@ -6,36 +6,28 @@
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
         <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.ordersUrl}}</p>
-        <p><strong>Using keys</strong>: {{appConfig.ordersIdKey}}, {{appConfig.ordersQuantityKey}}, {{appConfig.ordersSubtotalKey}}, {{appConfig.ordersTaxKey}}, {{appConfig.ordersTotalKey}}, {{appConfig.ordersProductKey}} (an object with a key of {{appConfig.productsNameKey}})</p>
+        <p><strong>Using keys</strong>: {{appConfig.ordersIdKey}}, {{appConfig.ordersSubtotalKey}}, {{appConfig.ordersTaxKey}}, {{appConfig.ordersTotalKey}}, {{appConfig.ordersCartedProductsKey}} (an array of objects with keys of quantity and product)</p>
       </div>
     </div>
     <div class="container">
       <h1>Orders</h1>
       <p v-if="orders.length === 0">No orders placed yet!</p>
-      <table v-else class="table table-hover">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Subtotal</th>
-            <th>Tax</th>
-            <th>Total</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="order in orders">
-            <td>{{order.product.name}}</td>
-            <td>{{order.quantity}}</td>
-            <td>{{order.subtotal}}</td>
-            <td>{{order.tax}}</td>
-            <td>{{order.total}}</td>
-            <td>
-              <router-link :to="{ name: 'exercise5-orders-show', params: {id: order.id}}" append class="btn btn-info">More info</router-link>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div v-for="order in orders">
+        <h4>Order #{{order.id}}</h4>
+        <hr>
+        <div v-for="cartedProduct in order.cartedProducts">
+          <p>
+            {{cartedProduct.quantity}} x
+            <span v-if="cartedProduct.product">{{cartedProduct.product.name}}</span>
+            <span v-else>Product id {{cartedProduct.product_id}}</span>
+          </p>
+        </div>
+        <hr>
+        <p>Subtotal: {{order.subtotal}}</p>
+        <p>Tax: {{order.tax}}</p>
+        <p>Total: {{order.total}}</p>
+        <br>
+      </div>
     </div>
   </div>
 </template>
@@ -78,11 +70,10 @@ export default {
       var missingKeys = [];
       var requiredKeys = [
         this.appConfig.ordersIdKey,
-        this.appConfig.ordersQuantityKey,
+        this.appConfig.ordersCartedProductsKey,
         this.appConfig.ordersSubtotalKey,
         this.appConfig.ordersTaxKey,
-        this.appConfig.ordersTotalKey,
-        this.appConfig.ordersProductKey
+        this.appConfig.ordersTotalKey
       ];
       requiredKeys.forEach(requiredKey => {
         if (data[0][requiredKey] === undefined) {
@@ -93,22 +84,13 @@ export default {
         this.$emit("showError", missingKeys);
         return [];
       }
-      for (var i = 0; i < data.length; i++) {
-        var product = data[i][this.appConfig.ordersProductKey];
-        if (product[this.appConfig.productsNameKey] === undefined) {
-          missingKeys.push(this.appConfig.productsNameKey);
-          this.$emit("showError", missingKeys);
-          return [];
-        }
-      }
       return data.map(order => {
         return {
           id: order[this.appConfig.ordersIdKey],
-          quantity: order[this.appConfig.ordersQuantityKey],
+          cartedProducts: order[this.appConfig.ordersCartedProductsKey],
           subtotal: order[this.appConfig.ordersSubtotalKey],
           tax: order[this.appConfig.ordersTaxKey],
-          total: order[this.appConfig.ordersTotalKey],
-          product: order[this.appConfig.ordersProductKey]
+          total: order[this.appConfig.ordersTotalKey]
         };
       });
     }

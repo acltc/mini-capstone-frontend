@@ -39,7 +39,7 @@
               <form v-on:submit.prevent="submit()" class="mb-4">
                 <label>Quantity:</label>
                 <input v-model="quantity" type="number" class="form-control">
-                <input type="submit" class="btn btn-primary mt-2" value="Buy now!">
+                <input type="submit" class="btn btn-primary mt-2" value="Add to cart!">
               </form>
             </div>
           </div>
@@ -195,13 +195,10 @@ export default {
         quantity: this.quantity
       };
       axios
-        .post(this.appConfig.domain + this.appConfig.ordersUrl, params)
+        .post(this.appConfig.domain + this.appConfig.cartedProductsUrl, params)
         .then(response => {
           this.quantity = null;
-          this.$router.push({
-            name: "exercise5-orders-show",
-            params: { id: response.data.id }
-          });
+          this.$router.push({ name: "exercise5-carted-products-index" });
         })
         .catch(error => {
           if (error.response && error.response.status === 401) {

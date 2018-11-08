@@ -7,6 +7,8 @@
       <div class="card card-body">
         <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.productsUrl}}</p>
         <p><strong>Using keys</strong>: {{appConfig.productsIdKey}}, {{appConfig.productsNameKey}}, {{appConfig.productsPriceKey}}, {{appConfig.productsImagesKey}} (an array of hashes with keys of {{this.appConfig.imagesUrlKey}}), {{appConfig.productsDescriptionKey}}</p>
+        <br>
+        <p>Note: If a "categories" key exists (where each category has a key of "name"), it will be used to display category links for each product!</p>
       </div>
     </div>
     <div class="container">
@@ -50,9 +52,11 @@ export default {
   },
   props: ["appConfig"],
   created: function() {
+    console.log("created");
     this.requestProducts();
   },
   beforeRouteUpdate(to, from, next) {
+    console.log("beforeRouteUpdate");
     next();
     this.requestProducts();
   },

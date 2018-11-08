@@ -18,6 +18,9 @@
             <span class="nav-link disabled"> | </span>
           </li>
           <li v-if="loggedIn()" class="nav-item">
+            <router-link :to="{ name: 'exercise5-carted-products-index'}" class="nav-link">Shopping Cart</router-link>
+          </li>
+          <li v-if="loggedIn()" class="nav-item">
             <router-link :to="{ name: 'exercise5-orders-index'}" class="nav-link">Orders</router-link>
           </li>
           <li class="nav-item">
@@ -101,13 +104,16 @@ export default {
         suppliersUrl: "/api/suppliers",
         suppliersIdKey: "id",
         suppliersNameKey: "name",
+        cartedProductsUrl: "/api/carted_products",
+        cartedProductsIdKey: "id",
+        cartedProductsQuantityKey: "quantity",
+        cartedProductsProductKey: "product",
         ordersUrl: "/api/orders",
         ordersIdKey: "id",
-        ordersQuantityKey: "quantity",
+        ordersCartedProductsKey: "carted_products",
         ordersSubtotalKey: "subtotal",
         ordersTaxKey: "tax",
-        ordersTotalKey: "total",
-        ordersProductKey: "product"
+        ordersTotalKey: "total"
       },
       missingKeys: [],
       searchTerms: ""

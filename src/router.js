@@ -35,6 +35,7 @@ import Exercise5ProductsIndex from "./views/exercise5/ProductsIndex.vue";
 import Exercise5ProductsShow from "./views/exercise5/ProductsShow.vue";
 import Exercise5ProductsNew from "./views/exercise5/ProductsNew.vue";
 import Exercise5ProductsEdit from "./views/exercise5/ProductsEdit.vue";
+import Exercise5CartedProductsIndex from "./views/exercise5/CartedProductsIndex.vue";
 import Exercise5OrdersIndex from "./views/exercise5/OrdersIndex.vue";
 import Exercise5OrdersShow from "./views/exercise5/OrdersShow.vue";
 import Exercise5Signup from "./views/exercise5/Signup.vue";
@@ -222,6 +223,11 @@ export default new Router({
           path: "products/:id/edit",
           component: Exercise5ProductsEdit,
           name: "exercise5-products-edit"
+        },
+        {
+          path: "carted_products",
+          component: Exercise5CartedProductsIndex,
+          name: "exercise5-carted-products-index"
         },
         {
           path: "orders",
