@@ -51,11 +51,6 @@ export default new Router({
       component: Exercise1App,
       children: [
         {
-          path: "",
-          component: Exercise1ProductsIndex,
-          name: "exercise1-home"
-        },
-        {
           path: "products",
           component: Exercise1ProductsIndex,
           name: "exercise1-products-index"
@@ -81,11 +76,6 @@ export default new Router({
       path: "/active-record-queries",
       component: Exercise2App,
       children: [
-        {
-          path: "",
-          component: Exercise2ProductsIndex,
-          name: "exercise2-home"
-        },
         {
           path: "products",
           component: Exercise2ProductsIndex,
@@ -113,11 +103,6 @@ export default new Router({
       component: Exercise3App,
       children: [
         {
-          path: "",
-          component: Exercise3ProductsIndex,
-          name: "exercise3-home"
-        },
-        {
           path: "products",
           component: Exercise3ProductsIndex,
           name: "exercise3-products-index"
@@ -143,11 +128,6 @@ export default new Router({
       path: "/authentication",
       component: Exercise4App,
       children: [
-        {
-          path: "",
-          component: Exercise4ProductsIndex,
-          name: "exercise4-home"
-        },
         {
           path: "products",
           component: Exercise4ProductsIndex,
@@ -199,11 +179,6 @@ export default new Router({
       path: "/has-many-through",
       component: Exercise5App,
       children: [
-        {
-          path: "",
-          component: Exercise5ProductsIndex,
-          name: "exercise5-home"
-        },
         {
           path: "products",
           component: Exercise5ProductsIndex,
