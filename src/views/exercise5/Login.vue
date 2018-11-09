@@ -45,7 +45,7 @@ export default {
             "Bearer " + response.data.jwt;
           localStorage.setItem("jwt", response.data.jwt);
           localStorage.setItem("admin", response.data.admin);
-          this.$router.push({ name: "exercise5-home" });
+          this.$router.push({ name: "exercise5-products-index" });
         })
         .catch(error => {
           this.errors = ["Invalid email or password."];
