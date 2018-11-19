@@ -33,11 +33,40 @@
 
 <script>
 import axios from "axios";
+import { validateAndFormatData } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
-      products: []
+      products: [],
+      productsSchema: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            productsIdKey: {
+              alias: "id",
+              type: "integer"
+            },
+            productsNameKey: {
+              alias: "name",
+              type: "string"
+            },
+            productsPriceKey: {
+              alias: "price",
+              type: "number"
+            },
+            productsDescriptionKey: {
+              alias: "description",
+              type: "string"
+            },
+            productsImageUrlKey: {
+              alias: "image_url",
+              type: "string"
+            }
+          }
+        }
+      }
     };
   },
   props: ["appConfig"],
@@ -61,42 +90,21 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$emit("showError", [
-            this.appConfig.domain,
-            this.appConfig.productsUrl
-          ]);
+          this.$emit("showError", ["domain", "productsUrl"]);
         });
     },
     formatProductResponse: function(data) {
-      if (data.length === 0) {
-        return;
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.productsSchema,
+        this.appConfig
+      );
+      if (invalidKeys.length > 0) {
+        this.$emit("showError", invalidKeys);
+        return this.products;
+      } else {
+        return formattedData;
       }
-      var missingKeys = [];
-      var requiredKeys = [
-        this.appConfig.productsIdKey,
-        this.appConfig.productsNameKey,
-        this.appConfig.productsPriceKey,
-        this.appConfig.productsImageUrlKey,
-        this.appConfig.productsDescriptionKey
-      ];
-      requiredKeys.forEach(requiredKey => {
-        if (data[0][requiredKey] === undefined) {
-          missingKeys.push(requiredKey);
-        }
-      });
-      if (missingKeys.length > 0) {
-        this.$emit("showError", missingKeys);
-        return;
-      }
-      return data.map(product => {
-        return {
-          id: product[this.appConfig.productsIdKey],
-          name: product[this.appConfig.productsNameKey],
-          price: product[this.appConfig.productsPriceKey],
-          image_url: product[this.appConfig.productsImageUrlKey],
-          description: product[this.appConfig.productsDescriptionKey]
-        };
-      });
     }
   },
   filters: {

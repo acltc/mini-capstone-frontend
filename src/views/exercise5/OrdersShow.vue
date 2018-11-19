@@ -44,11 +44,56 @@
 /* global $ */
 
 import axios from "axios";
+import { validateAndFormatData } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
-      order: { id: 0, product: {} }
+      order: { id: 0, product: {} },
+      orderSchema: {
+        type: "object",
+        properties: {
+          ordersIdKey: {
+            alias: "id",
+            type: "integer"
+          },
+          ordersCartedProductsKey: {
+            alias: "cartedProducts",
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                cartedProductsQuantityKey: {
+                  alias: "quantity",
+                  type: "integer"
+                },
+                cartedProductsProductKey: {
+                  alias: "product",
+                  type: "object",
+                  properties: {
+                    productsNameKey: {
+                      alias: "name",
+                      type: "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          ordersSubtotalKey: {
+            alias: "subtotal",
+            type: "number"
+          },
+          ordersTaxKey: {
+            alias: "tax",
+            type: "number"
+          },
+          ordersTotalKey: {
+            alias: "total",
+            type: "number"
+          }
+        }
+      }
     };
   },
   props: ["appConfig"],
@@ -62,44 +107,30 @@ export default {
       )
       .then(response => {
         this.order = this.formatOrderResponse(response.data);
+        console.log("ORDER", this.order);
       })
       .catch(error => {
         if (error.response && error.response.status === 401) {
           this.$router.push({ name: "exercise5-login" });
           return;
         }
-        this.$emit("showError", [
-          this.appConfig.domain,
-          this.appConfig.ordersUrl
-        ]);
+        this.$emit("showError", ["domain", "ordersUrl"]);
       });
   },
   methods: {
     formatOrderResponse: function(data) {
-      var missingKeys = [];
-      var requiredKeys = [
-        this.appConfig.ordersIdKey,
-        this.appConfig.ordersCartedProductsKey,
-        this.appConfig.ordersSubtotalKey,
-        this.appConfig.ordersTaxKey,
-        this.appConfig.ordersTotalKey
-      ];
-      requiredKeys.forEach(requiredKey => {
-        if (data[requiredKey] === undefined) {
-          missingKeys.push(requiredKey);
-        }
-      });
-      if (missingKeys.length > 0) {
-        this.$emit("showError", missingKeys);
-        return {};
+      console.log("formatOrderResponse", data, this.orderSchema);
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.orderSchema,
+        this.appConfig
+      );
+      if (invalidKeys.length > 0) {
+        this.$emit("showError", invalidKeys);
+        return this.order;
+      } else {
+        return formattedData;
       }
-      return {
-        id: data[this.appConfig.ordersIdKey],
-        cartedProducts: data[this.appConfig.ordersCartedProductsKey],
-        subtotal: data[this.appConfig.ordersSubtotalKey],
-        tax: data[this.appConfig.ordersTaxKey],
-        total: data[this.appConfig.ordersTotalKey]
-      };
     },
     deleteProduct: function(product) {
       console.log("delete", product);

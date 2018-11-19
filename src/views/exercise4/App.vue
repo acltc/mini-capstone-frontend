@@ -56,9 +56,9 @@
           </div>
           <div class="modal-body">
             <div v-for="(value, key) in appConfig" class="form-group row">
-              <label :for='key' class="col-sm-6 col-form-label" v-bind:class='{"text-danger": missingKeys.includes(value)}'>{{key}}</label>
+              <label :for='key' class="col-sm-6 col-form-label" v-bind:class='{"text-danger": missingKeys.includes(key)}'>{{key}}</label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" v-bind:class='{"is-invalid": missingKeys.includes(value)}' :id='key' v-model='appConfig[key]'>
+                <input type="text" class="form-control" v-bind:class='{"is-invalid": missingKeys.includes(key)}' :id='key' v-model='appConfig[key]'>
               </div>
             </div>
           </div>

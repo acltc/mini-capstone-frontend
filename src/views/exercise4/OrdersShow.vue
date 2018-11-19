@@ -60,11 +60,47 @@
 /* global $ */
 
 import axios from "axios";
+import { validateAndFormatData } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
-      order: { id: 0, product: {} }
+      order: { id: 0, product: {} },
+      orderSchema: {
+        type: "object",
+        properties: {
+          ordersIdKey: {
+            alias: "id",
+            type: "integer"
+          },
+          ordersQuantityKey: {
+            alias: "quantity",
+            type: "integer"
+          },
+          ordersSubtotalKey: {
+            alias: "subtotal",
+            type: "number"
+          },
+          ordersTaxKey: {
+            alias: "tax",
+            type: "number"
+          },
+          ordersTotalKey: {
+            alias: "total",
+            type: "number"
+          },
+          ordersProductKey: {
+            alias: "product",
+            type: "object",
+            properties: {
+              productsNameKey: {
+                alias: "name",
+                type: "string"
+              }
+            }
+          }
+        }
+      }
     };
   },
   props: ["appConfig"],
@@ -80,49 +116,22 @@ export default {
         this.order = this.formatOrderResponse(response.data);
       })
       .catch(error => {
-        this.$emit("showError", [
-          this.appConfig.domain,
-          this.appConfig.ordersUrl
-        ]);
+        this.$emit("showError", ["domain", "ordersUrl"]);
       });
   },
   methods: {
     formatOrderResponse: function(data) {
-      var missingKeys = [];
-      var requiredKeys = [
-        this.appConfig.ordersIdKey,
-        this.appConfig.ordersQuantityKey,
-        this.appConfig.ordersSubtotalKey,
-        this.appConfig.ordersTaxKey,
-        this.appConfig.ordersTotalKey,
-        this.appConfig.ordersProductKey
-      ];
-      requiredKeys.forEach(requiredKey => {
-        if (data[requiredKey] === undefined) {
-          missingKeys.push(requiredKey);
-        }
-      });
-      if (missingKeys.length > 0) {
-        this.$emit("showError", missingKeys);
-        return {};
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.orderSchema,
+        this.appConfig
+      );
+      if (invalidKeys.length > 0) {
+        this.$emit("showError", invalidKeys);
+        return this.order;
+      } else {
+        return formattedData;
       }
-      if (
-        data[this.appConfig.ordersProductKey][
-          this.appConfig.productsNameKey
-        ] === undefined
-      ) {
-        missingKeys.push(this.appConfig.productsNameKey);
-        this.$emit("showError", missingKeys);
-        return {};
-      }
-      return {
-        id: data[this.appConfig.ordersIdKey],
-        quantity: data[this.appConfig.ordersQuantityKey],
-        subtotal: data[this.appConfig.ordersSubtotalKey],
-        tax: data[this.appConfig.ordersTaxKey],
-        total: data[this.appConfig.ordersTotalKey],
-        product: data[this.appConfig.ordersProductKey]
-      };
     },
     deleteProduct: function(product) {
       console.log("delete", product);

@@ -40,11 +40,37 @@
 
 <script>
 import axios from "axios";
+import { validateAndFormatData } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
       product: { id: 0 },
+      productSchema: {
+        type: "object",
+        properties: {
+          productsIdKey: {
+            alias: "id",
+            type: "integer"
+          },
+          productsNameKey: {
+            alias: "name",
+            type: "string"
+          },
+          productsPriceKey: {
+            alias: "price",
+            type: "number"
+          },
+          productsDescriptionKey: {
+            alias: "description",
+            type: "string"
+          },
+          productsImageUrlKey: {
+            alias: "image_url",
+            type: "string"
+          }
+        }
+      },
       errors: []
     };
   },
@@ -61,38 +87,22 @@ export default {
         this.product = this.formatProductResponse(response.data);
       })
       .catch(error => {
-        this.$emit("showError", [
-          this.appConfig.domain,
-          this.appConfig.productsUrl
-        ]);
+        this.$emit("showError", ["domain", "productsUrl"]);
       });
   },
   methods: {
     formatProductResponse: function(data) {
-      var missingKeys = [];
-      var requiredKeys = [
-        this.appConfig.productsIdKey,
-        this.appConfig.productsNameKey,
-        this.appConfig.productsPriceKey,
-        this.appConfig.productsImageUrlKey,
-        this.appConfig.productsDescriptionKey
-      ];
-      requiredKeys.forEach(requiredKey => {
-        if (data[requiredKey] === undefined) {
-          missingKeys.push(requiredKey);
-        }
-      });
-      if (missingKeys.length > 0) {
-        this.$emit("showError", missingKeys);
-        return;
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.productSchema,
+        this.appConfig
+      );
+      if (invalidKeys.length > 0) {
+        this.$emit("showError", invalidKeys);
+        return this.product;
+      } else {
+        return formattedData;
       }
-      return {
-        id: data[this.appConfig.productsIdKey],
-        name: data[this.appConfig.productsNameKey],
-        price: data[this.appConfig.productsPriceKey],
-        image_url: data[this.appConfig.productsImageUrlKey],
-        description: data[this.appConfig.productsDescriptionKey]
-      };
     },
     submit: function() {
       var params = {

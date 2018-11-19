@@ -34,11 +34,59 @@
 
 <script>
 import axios from "axios";
+import { validateAndFormatData } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
-      orders: []
+      orders: [],
+      ordersSchema: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            ordersIdKey: {
+              alias: "id",
+              type: "integer"
+            },
+            ordersCartedProductsKey: {
+              alias: "cartedProducts",
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  cartedProductsQuantityKey: {
+                    alias: "quantity",
+                    type: "integer"
+                  },
+                  cartedProductsProductKey: {
+                    alias: "product",
+                    type: "object",
+                    properties: {
+                      productsNameKey: {
+                        alias: "name",
+                        type: "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            ordersSubtotalKey: {
+              alias: "subtotal",
+              type: "number"
+            },
+            ordersTaxKey: {
+              alias: "tax",
+              type: "number"
+            },
+            ordersTotalKey: {
+              alias: "total",
+              type: "number"
+            }
+          }
+        }
+      }
     };
   },
   props: ["appConfig"],
@@ -57,42 +105,21 @@ export default {
             this.$router.push({ name: "exercise5-login" });
             return;
           }
-          this.$emit("showError", [
-            this.appConfig.domain,
-            this.appConfig.ordersUrl
-          ]);
+          this.$emit("showError", ["domain", "ordersUrl"]);
         });
     },
     formatOrderResponse: function(data) {
-      if (data === undefined || data.length === 0) {
-        return [];
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.ordersSchema,
+        this.appConfig
+      );
+      if (invalidKeys.length > 0) {
+        this.$emit("showError", invalidKeys);
+        return this.orders;
+      } else {
+        return formattedData;
       }
-      var missingKeys = [];
-      var requiredKeys = [
-        this.appConfig.ordersIdKey,
-        this.appConfig.ordersCartedProductsKey,
-        this.appConfig.ordersSubtotalKey,
-        this.appConfig.ordersTaxKey,
-        this.appConfig.ordersTotalKey
-      ];
-      requiredKeys.forEach(requiredKey => {
-        if (data[0][requiredKey] === undefined) {
-          missingKeys.push(requiredKey);
-        }
-      });
-      if (missingKeys.length > 0) {
-        this.$emit("showError", missingKeys);
-        return [];
-      }
-      return data.map(order => {
-        return {
-          id: order[this.appConfig.ordersIdKey],
-          cartedProducts: order[this.appConfig.ordersCartedProductsKey],
-          subtotal: order[this.appConfig.ordersSubtotalKey],
-          tax: order[this.appConfig.ordersTaxKey],
-          total: order[this.appConfig.ordersTotalKey]
-        };
-      });
     }
   }
 };

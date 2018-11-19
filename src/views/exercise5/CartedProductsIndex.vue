@@ -30,11 +30,38 @@
 
 <script>
 import axios from "axios";
+import { validateAndFormatData } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
-      cartedProducts: []
+      cartedProducts: [],
+      cartedProductsSchema: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            cartedProductsIdKey: {
+              alias: "id",
+              type: "integer"
+            },
+            cartedProductsQuantityKey: {
+              alias: "quantity",
+              type: "integer"
+            },
+            cartedProductsProductKey: {
+              alias: "product",
+              type: "object",
+              properties: {
+                productsNameKey: {
+                  alias: "name",
+                  type: "string"
+                }
+              }
+            }
+          }
+        }
+      }
     };
   },
   props: ["appConfig"],
@@ -56,56 +83,21 @@ export default {
             this.$router.push({ name: "exercise5-login" });
             return;
           }
-          this.$emit("showError", [
-            this.appConfig.domain,
-            this.appConfig.cartedProductsUrl
-          ]);
+          this.$emit("showError", ["domain", "cartedProductsUrl"]);
         });
     },
     formatCartedProductsResponse: function(data) {
-      if (data === undefined || data.length === 0) {
-        return [];
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.cartedProductsSchema,
+        this.appConfig
+      );
+      if (invalidKeys.length > 0) {
+        this.$emit("showError", invalidKeys);
+        return this.cartedProducts;
+      } else {
+        return formattedData;
       }
-      var missingKeys = [];
-      var requiredKeys = [
-        this.appConfig.cartedProductsIdKey,
-        this.appConfig.cartedProductsQuantityKey,
-        this.appConfig.cartedProductsProductKey
-      ];
-      requiredKeys.forEach(requiredKey => {
-        if (data[0][requiredKey] === undefined) {
-          missingKeys.push(requiredKey);
-        }
-      });
-      if (missingKeys.length > 0) {
-        this.$emit("showError", missingKeys);
-        return [];
-      }
-      return data.map(cartedProduct => {
-        return {
-          id: cartedProduct[this.appConfig.cartedProductsIdKey],
-          quantity: cartedProduct[this.appConfig.cartedProductsQuantityKey],
-          product: cartedProduct[this.appConfig.cartedProductsProductKey]
-        };
-      });
-      // for (var i = 0; i < data.length; i++) {
-      //   var product = data[i][this.appConfig.ordersProductKey];
-      //   if (product[this.appConfig.productsNameKey] === undefined) {
-      //     missingKeys.push(this.appConfig.productsNameKey);
-      //     this.$emit("showError", missingKeys);
-      //     return [];
-      //   }
-      // }
-      // return data.map(order => {
-      //   return {
-      //     id: order[this.appConfig.ordersIdKey],
-      //     quantity: order[this.appConfig.ordersQuantityKey],
-      //     subtotal: order[this.appConfig.ordersSubtotalKey],
-      //     tax: order[this.appConfig.ordersTaxKey],
-      //     total: order[this.appConfig.ordersTotalKey],
-      //     product: order[this.appConfig.ordersProductKey]
-      //   };
-      // });
     },
     createOrder: function() {
       axios

@@ -42,11 +42,50 @@
 
 <script>
 import axios from "axios";
+import { validateAndFormatData } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
-      orders: []
+      orders: [],
+      ordersSchema: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            ordersIdKey: {
+              alias: "id",
+              type: "integer"
+            },
+            ordersQuantityKey: {
+              alias: "quantity",
+              type: "integer"
+            },
+            ordersSubtotalKey: {
+              alias: "subtotal",
+              type: "number"
+            },
+            ordersTaxKey: {
+              alias: "tax",
+              type: "number"
+            },
+            ordersTotalKey: {
+              alias: "total",
+              type: "number"
+            },
+            ordersProductKey: {
+              alias: "product",
+              type: "object",
+              properties: {
+                productsNameKey: {
+                  alias: "name",
+                  type: "string"
+                }
+              }
+            }
+          }
+        }
+      }
     };
   },
   props: ["appConfig"],
@@ -62,52 +101,21 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$emit("showError", [
-            this.appConfig.domain,
-            this.appConfig.ordersUrl
-          ]);
+          this.$emit("showError", ["domain", "ordersUrl"]);
         });
     },
     formatOrderResponse: function(data) {
-      if (data === undefined || data.length === 0) {
-        return [];
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.ordersSchema,
+        this.appConfig
+      );
+      if (invalidKeys.length > 0) {
+        this.$emit("showError", invalidKeys);
+        return this.orders;
+      } else {
+        return formattedData;
       }
-      var missingKeys = [];
-      var requiredKeys = [
-        this.appConfig.ordersIdKey,
-        this.appConfig.ordersQuantityKey,
-        this.appConfig.ordersSubtotalKey,
-        this.appConfig.ordersTaxKey,
-        this.appConfig.ordersTotalKey,
-        this.appConfig.ordersProductKey
-      ];
-      requiredKeys.forEach(requiredKey => {
-        if (data[0][requiredKey] === undefined) {
-          missingKeys.push(requiredKey);
-        }
-      });
-      if (missingKeys.length > 0) {
-        this.$emit("showError", missingKeys);
-        return [];
-      }
-      for (var i = 0; i < data.length; i++) {
-        var product = data[i][this.appConfig.ordersProductKey];
-        if (product[this.appConfig.productsNameKey] === undefined) {
-          missingKeys.push(this.appConfig.productsNameKey);
-          this.$emit("showError", missingKeys);
-          return [];
-        }
-      }
-      return data.map(order => {
-        return {
-          id: order[this.appConfig.ordersIdKey],
-          quantity: order[this.appConfig.ordersQuantityKey],
-          subtotal: order[this.appConfig.ordersSubtotalKey],
-          tax: order[this.appConfig.ordersTaxKey],
-          total: order[this.appConfig.ordersTotalKey],
-          product: order[this.appConfig.ordersProductKey]
-        };
-      });
     }
   }
 };

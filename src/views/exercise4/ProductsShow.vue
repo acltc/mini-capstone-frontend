@@ -102,11 +102,46 @@
 /* global $ */
 
 import axios from "axios";
+import { validateAndFormatData } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
       product: { id: 0 },
+      productSchema: {
+        type: "object",
+        properties: {
+          productsIdKey: {
+            alias: "id",
+            type: "integer"
+          },
+          productsNameKey: {
+            alias: "name",
+            type: "string"
+          },
+          productsPriceKey: {
+            alias: "price",
+            type: "number"
+          },
+          productsDescriptionKey: {
+            alias: "description",
+            type: "string"
+          },
+          productsImagesKey: {
+            alias: "images",
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                imagesUrlKey: {
+                  alias: "url",
+                  type: "string"
+                }
+              }
+            }
+          }
+        }
+      },
       originalProductData: {},
       quantity: null,
       errors: []
@@ -126,51 +161,22 @@ export default {
         this.originalProductData = response.data;
       })
       .catch(error => {
-        this.$emit("showError", [
-          this.appConfig.domain,
-          this.appConfig.productsUrl
-        ]);
+        this.$emit("showError", ["domain", "productsUrl"]);
       });
   },
   methods: {
     formatProductResponse: function(data) {
-      var missingKeys = [];
-      var requiredKeys = [
-        this.appConfig.productsIdKey,
-        this.appConfig.productsNameKey,
-        this.appConfig.productsPriceKey,
-        this.appConfig.productsImagesKey,
-        this.appConfig.productsDescriptionKey
-      ];
-      requiredKeys.forEach(requiredKey => {
-        if (data[requiredKey] === undefined) {
-          missingKeys.push(requiredKey);
-        }
-      });
-      if (missingKeys.length > 0) {
-        this.$emit("showError", missingKeys);
-        return;
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.productSchema,
+        this.appConfig
+      );
+      if (invalidKeys.length > 0) {
+        this.$emit("showError", invalidKeys);
+        return this.product;
+      } else {
+        return formattedData;
       }
-      var images = data[this.appConfig.productsImagesKey];
-      for (var j = 0; j < images.length; j++) {
-        if (images[j][this.appConfig.imagesUrlKey] === undefined) {
-          missingKeys.push(this.appConfig.imagesUrlKey);
-          this.$emit("showError", missingKeys);
-          return;
-        }
-      }
-      return {
-        id: data[this.appConfig.productsIdKey],
-        name: data[this.appConfig.productsNameKey],
-        price: data[this.appConfig.productsPriceKey],
-        images: data[this.appConfig.productsImagesKey].map(image => {
-          return {
-            id: image[this.appConfig.imagesIdKey],
-            url: image[this.appConfig.imagesUrlKey]
-          };
-        }),
-        description: data[this.appConfig.productsDescriptionKey]
-      };
     },
     deleteProduct: function(product) {
       console.log("delete", product);

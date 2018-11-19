@@ -43,11 +43,49 @@
 
 <script>
 import axios from "axios";
+import { validateAndFormatData } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
-      products: []
+      products: [],
+      productsSchema: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            productsIdKey: {
+              alias: "id",
+              type: "integer"
+            },
+            productsNameKey: {
+              alias: "name",
+              type: "string"
+            },
+            productsPriceKey: {
+              alias: "price",
+              type: "number"
+            },
+            productsDescriptionKey: {
+              alias: "description",
+              type: "string"
+            },
+            productsImagesKey: {
+              alias: "images",
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  imagesUrlKey: {
+                    alias: "url",
+                    type: "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     };
   },
   props: ["appConfig"],
@@ -73,73 +111,21 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$emit("showError", [
-            this.appConfig.domain,
-            this.appConfig.productsUrl
-          ]);
+          this.$emit("showError", ["domain", "productsUrl"]);
         });
     },
     formatProductResponse: function(data) {
-      if (data.length === 0) {
-        return;
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.productsSchema,
+        this.appConfig
+      );
+      if (invalidKeys.length > 0) {
+        this.$emit("showError", invalidKeys);
+        return this.products;
+      } else {
+        return formattedData;
       }
-      var missingKeys = [];
-      var requiredKeys = [
-        this.appConfig.productsIdKey,
-        this.appConfig.productsNameKey,
-        this.appConfig.productsPriceKey,
-        this.appConfig.productsImagesKey,
-        this.appConfig.productsDescriptionKey
-      ];
-      requiredKeys.forEach(requiredKey => {
-        if (data[0][requiredKey] === undefined) {
-          missingKeys.push(requiredKey);
-        }
-      });
-      if (missingKeys.length > 0) {
-        this.$emit("showError", missingKeys);
-        return;
-      }
-      for (var i = 0; i < data.length; i++) {
-        var images = data[i][this.appConfig.productsImagesKey];
-        for (var j = 0; j < images.length; j++) {
-          if (images[j][this.appConfig.imagesUrlKey] === undefined) {
-            missingKeys.push(this.appConfig.imagesUrlKey);
-            this.$emit("showError", missingKeys);
-            return;
-          }
-        }
-      }
-      var validCategories = true;
-      for (i = 0; i < data.length; i++) {
-        var categories = data[i]["categories"];
-        if (categories === undefined) {
-          validCategories = false;
-          break;
-        } else {
-          for (j = 0; j < categories.length; j++) {
-            if (categories[j]["name"] === undefined) {
-              validCategories = false;
-              break;
-            }
-          }
-        }
-      }
-      return data.map(product => {
-        return {
-          id: product[this.appConfig.productsIdKey],
-          name: product[this.appConfig.productsNameKey],
-          price: product[this.appConfig.productsPriceKey],
-          images: product[this.appConfig.productsImagesKey].map(image => {
-            return {
-              id: image[this.appConfig.imagesIdKey],
-              url: image[this.appConfig.imagesUrlKey]
-            };
-          }),
-          description: product[this.appConfig.productsDescriptionKey],
-          categories: validCategories ? product["categories"] : []
-        };
-      });
     },
     getPrimaryImage: function(product) {
       return product.images.length > 0
