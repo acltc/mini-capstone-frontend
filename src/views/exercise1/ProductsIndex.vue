@@ -51,14 +51,14 @@
 
 <script>
 import axios from "axios";
-import { validateAndFormatData } from "../../helpers.js";
+import { validateAndFormatData, wordifySchema } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
       products: [],
       wordifiedSchema: "",
-      productsSchema: {
+      schema: {
         type: "array",
         items: {
           type: "object",
@@ -90,6 +90,7 @@ export default {
   },
   props: ["appConfig"],
   created: function() {
+    this.wordifiedSchema = wordifySchema(this.schema, this.appConfig);
     axios
       .get(this.appConfig.domain + this.appConfig.productsUrl)
       .then(response => {
@@ -101,16 +102,15 @@ export default {
   },
   methods: {
     formatProductResponse: function(data) {
-      let {
-        invalidKeys,
-        formattedData,
-        wordifiedSchema
-      } = validateAndFormatData(data, this.productsSchema, this.appConfig);
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.schema,
+        this.appConfig
+      );
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.products;
       } else {
-        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     }

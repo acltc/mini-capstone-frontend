@@ -59,7 +59,7 @@ function formatData(data, schema, config) {
   }
 }
 
-function wordifySchema(schema, config, pluralize = false) {
+export function wordifySchema(schema, config, pluralize = false) {
   var result = "";
   if (schema.type === "array") {
     let type = pluralize ? "arrays" : "array";
@@ -83,10 +83,9 @@ function wordifySchema(schema, config, pluralize = false) {
 
 export function validateAndFormatData(data, schema, config) {
   let invalidKeys = validateData(data, schema, config);
-  if (invalidKeys.length > 0) {
-    return { invalidKeys };
+  let formattedData;
+  if (invalidKeys.length === 0) {
+    formattedData = formatData(data, schema, config);
   }
-  let formattedData = formatData(data, schema, config);
-  let wordifiedSchema = wordifySchema(schema, config);
-  return { invalidKeys, formattedData, wordifiedSchema };
+  return { invalidKeys, formattedData };
 }

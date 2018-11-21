@@ -1,39 +1,95 @@
 <template>
   <div class="home">
-    <a class="btn btn-outline-info m-3 float-right" data-toggle="collapse" href="#collapseDebugInfo" role="button" aria-expanded="false" aria-controls="collapseDebugInfo">
+    <a
+      class="btn btn-outline-info m-3 float-right"
+      data-toggle="collapse"
+      href="#collapseDebugInfo"
+      role="button"
+      aria-expanded="false"
+      aria-controls="collapseDebugInfo"
+    >
       &#9432;
     </a>
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
-        <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.productsUrl}}</p>
-        <p><strong>Data shape</strong>: <span v-html="wordifiedSchema"></span></p>
-        <br>
-        <p>Note: If a "categories" key exists (where each category has a key of "name"), it will be used to display category links for each product!</p>
+        <p>
+          <strong>Data from</strong>: GET {{ appConfig.domain
+          }}{{ appConfig.productsUrl }}
+        </p>
+        <p>
+          <strong>Data shape</strong>: <span v-html="wordifiedSchema"></span>
+        </p>
+        <br />
+        <p>
+          Note: If a "categories" key exists (where each category has a key of
+          "name"), it will be used to display category links for each product!
+        </p>
       </div>
     </div>
     <div class="container">
       <h1>Products</h1>
       <a href="/"></a>
-      <router-link :to="{ name: 'exercise5-products-index', query: {sort: 'price', sort_order: 'asc'}}" append class="btn btn-light">Sort by lowest price</router-link>
-      <router-link :to="{ name: 'exercise5-products-index', query: {sort: 'price', sort_order: 'desc'}}" append class="btn btn-light">Sort by highest price</router-link>
-      <router-link :to="{ name: 'exercise5-products-index', query: {discount: true}}" append class="btn btn-light">Show only discounted</router-link>
-      <router-link :to="{ name: 'exercise5-products-index'}" append class="btn btn-light">Show all</router-link>
+      <router-link
+        :to="{
+          name: 'exercise5-products-index',
+          query: { sort: 'price', sort_order: 'asc' }
+        }"
+        append
+        class="btn btn-light"
+        >Sort by lowest price</router-link
+      >
+      <router-link
+        :to="{
+          name: 'exercise5-products-index',
+          query: { sort: 'price', sort_order: 'desc' }
+        }"
+        append
+        class="btn btn-light"
+        >Sort by highest price</router-link
+      >
+      <router-link
+        :to="{ name: 'exercise5-products-index', query: { discount: true } }"
+        append
+        class="btn btn-light"
+        >Show only discounted</router-link
+      >
+      <router-link
+        :to="{ name: 'exercise5-products-index' }"
+        append
+        class="btn btn-light"
+        >Show all</router-link
+      >
       <div class="card-columns">
         <div v-for="product in products" class="card">
-          <img class="card-img-top" v-bind:src="getPrimaryImage(product)" alt="Card image cap">
+          <img
+            class="card-img-top"
+            v-bind:src="getPrimaryImage(product)"
+            alt="Card image cap"
+          />
           <div class="card-body">
             <h5 class="card-title">{{ product.name }}</h5>
             <router-link
               v-for="category in product.categories"
-              :to="{ name: 'exercise5-products-index', query: {category: category.name}}"
+              :to="{
+                name: 'exercise5-products-index',
+                query: { category: category.name }
+              }"
               append
               class="d-inline-block mr-2 mb-3"
             >
-              {{category.name}}
+              {{ category.name }}
             </router-link>
             <h6>{{ product.price }}</h6>
             <p class="card-text">{{ product.description | truncate }}</p>
-            <router-link :to="{ name: 'exercise5-products-show', params: {id: product.id}}" append class="btn btn-info">More info</router-link>
+            <router-link
+              :to="{
+                name: 'exercise5-products-show',
+                params: { id: product.id }
+              }"
+              append
+              class="btn btn-info"
+              >More info</router-link
+            >
           </div>
         </div>
       </div>
@@ -43,14 +99,14 @@
 
 <script>
 import axios from "axios";
-import { validateAndFormatData } from "../../helpers.js";
+import { validateAndFormatData, wordifySchema } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
       products: [],
       wordifiedSchema: "",
-      productsSchema: {
+      schema: {
         type: "array",
         items: {
           type: "object",
@@ -91,7 +147,7 @@ export default {
   },
   props: ["appConfig"],
   created: function() {
-    console.log("created");
+    this.wordifiedSchema = wordifySchema(this.schema, this.appConfig);
     this.requestProducts();
   },
   beforeRouteUpdate(to, from, next) {
@@ -116,16 +172,15 @@ export default {
         });
     },
     formatProductResponse: function(data) {
-      let {
-        invalidKeys,
-        formattedData,
-        wordifiedSchema
-      } = validateAndFormatData(data, this.productsSchema, this.appConfig);
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.schema,
+        this.appConfig
+      );
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.products;
       } else {
-        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     },

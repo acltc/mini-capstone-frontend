@@ -76,14 +76,14 @@
 /* global $ */
 
 import axios from "axios";
-import { validateAndFormatData } from "../../helpers.js";
+import { validateAndFormatData, wordifySchema } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
       order: { id: 0, product: {} },
       wordifiedSchema: "",
-      orderSchema: {
+      schema: {
         type: "object",
         properties: {
           ordersIdKey: {
@@ -122,6 +122,7 @@ export default {
   },
   props: ["appConfig"],
   created: function() {
+    this.wordifiedSchema = wordifySchema(this.schema, this.appConfig);
     axios
       .get(
         this.appConfig.domain +
@@ -138,16 +139,15 @@ export default {
   },
   methods: {
     formatOrderResponse: function(data) {
-      let {
-        invalidKeys,
-        formattedData,
-        wordifiedSchema
-      } = validateAndFormatData(data, this.orderSchema, this.appConfig);
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.schema,
+        this.appConfig
+      );
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.order;
       } else {
-        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     },

@@ -66,14 +66,14 @@
 
 <script>
 import axios from "axios";
-import { validateAndFormatData } from "../../helpers.js";
+import { validateAndFormatData, wordifySchema } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
       product: { id: 0 },
       wordifiedSchema: "",
-      productSchema: {
+      schema: {
         type: "object",
         properties: {
           productsIdKey: {
@@ -99,6 +99,7 @@ export default {
   },
   props: ["appConfig", "isAdmin"],
   created: function() {
+    this.wordifiedSchema = wordifySchema(this.schema, this.appConfig);
     if (!this.isAdmin()) {
       this.$router.push({ name: "exercise5-login" });
       return;
@@ -119,16 +120,15 @@ export default {
   },
   methods: {
     formatProductResponse: function(data) {
-      let {
-        invalidKeys,
-        formattedData,
-        wordifiedSchema
-      } = validateAndFormatData(data, this.productSchema, this.appConfig);
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.schema,
+        this.appConfig
+      );
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.product;
       } else {
-        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     },

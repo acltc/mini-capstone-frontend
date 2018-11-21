@@ -1,29 +1,47 @@
 <template>
   <div class="home">
-    <a class="btn btn-outline-info m-3 float-right" data-toggle="collapse" href="#collapseDebugInfo" role="button" aria-expanded="false" aria-controls="collapseDebugInfo">
+    <a
+      class="btn btn-outline-info m-3 float-right"
+      data-toggle="collapse"
+      href="#collapseDebugInfo"
+      role="button"
+      aria-expanded="false"
+      aria-controls="collapseDebugInfo"
+    >
       &#9432;
     </a>
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
-        <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.ordersUrl}}/{{$route.params.id}}</p>
-        <p><strong>Data shape</strong>: <span v-html="wordifiedSchema"></span></p>
+        <p>
+          <strong>Data from</strong>: GET {{ appConfig.domain
+          }}{{ appConfig.ordersUrl }}/{{ $route.params.id }}
+        </p>
+        <p>
+          <strong>Data shape</strong>: <span v-html="wordifiedSchema"></span>
+        </p>
       </div>
     </div>
     <div class="container">
-      <h1>Order #{{order.id}}</h1>
-      <hr>
+      <h1>Order #{{ order.id }}</h1>
+      <hr />
       <div v-for="cartedProduct in order.cartedProducts">
         <p>
-          {{cartedProduct.quantity}} x
-          <span v-if="cartedProduct.product">{{cartedProduct.product.name}}</span>
-          <span v-else>Product id {{cartedProduct.product_id}}</span>
+          {{ cartedProduct.quantity }} x
+          <span v-if="cartedProduct.product">{{
+            cartedProduct.product.name
+          }}</span>
+          <span v-else>Product id {{ cartedProduct.product_id }}</span>
         </p>
       </div>
-      <hr>
-      <p>Subtotal: {{order.subtotal}}</p>
-      <p>Tax: {{order.tax}}</p>
-      <p>Total: {{order.total}}</p>
-      <router-link :to="{ name: 'exercise5-products-index' }" class="btn btn-primary">Back to all products</router-link>
+      <hr />
+      <p>Subtotal: {{ order.subtotal }}</p>
+      <p>Tax: {{ order.tax }}</p>
+      <p>Total: {{ order.total }}</p>
+      <router-link
+        :to="{ name: 'exercise5-products-index' }"
+        class="btn btn-primary"
+        >Back to all products</router-link
+      >
     </div>
   </div>
 </template>
@@ -44,14 +62,14 @@
 /* global $ */
 
 import axios from "axios";
-import { validateAndFormatData } from "../../helpers.js";
+import { validateAndFormatData, wordifySchema } from "../../helpers.js";
 
 export default {
   data: function() {
     return {
       order: { id: 0, product: {} },
       wordifiedSchema: "",
-      orderSchema: {
+      schema: {
         type: "object",
         properties: {
           ordersIdKey: {
@@ -99,6 +117,7 @@ export default {
   },
   props: ["appConfig"],
   created: function() {
+    this.wordifiedSchema = wordifySchema(this.schema, this.appConfig);
     axios
       .get(
         this.appConfig.domain +
@@ -120,17 +139,15 @@ export default {
   },
   methods: {
     formatOrderResponse: function(data) {
-      console.log("formatOrderResponse", data, this.orderSchema);
-      let {
-        invalidKeys,
-        formattedData,
-        wordifiedSchema
-      } = validateAndFormatData(data, this.orderSchema, this.appConfig);
+      let { invalidKeys, formattedData } = validateAndFormatData(
+        data,
+        this.schema,
+        this.appConfig
+      );
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.order;
       } else {
-        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     },
