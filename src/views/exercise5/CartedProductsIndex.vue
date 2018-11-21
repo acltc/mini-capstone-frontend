@@ -6,7 +6,7 @@
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
         <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.cartedProductsUrl}}</p>
-        <p><strong>Using keys</strong>: {{appConfig.cartedProductsIdKey}}, {{appConfig.cartedProductsQuantityKey}}, {{appConfig.cartedProductsProductKey}} (an object with keys of name, price)</p>
+        <p><strong>Data shape</strong>: <span v-html="wordifiedSchema"></span></p>
       </div>
     </div>
     <div class="container">
@@ -36,6 +36,7 @@ export default {
   data: function() {
     return {
       cartedProducts: [],
+      wordifiedSchema: "",
       cartedProductsSchema: {
         type: "array",
         items: {
@@ -87,7 +88,11 @@ export default {
         });
     },
     formatCartedProductsResponse: function(data) {
-      let { invalidKeys, formattedData } = validateAndFormatData(
+      let {
+        invalidKeys,
+        formattedData,
+        wordifiedSchema
+      } = validateAndFormatData(
         data,
         this.cartedProductsSchema,
         this.appConfig
@@ -96,6 +101,7 @@ export default {
         this.$emit("showError", invalidKeys);
         return this.cartedProducts;
       } else {
+        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     },

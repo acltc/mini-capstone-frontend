@@ -1,38 +1,68 @@
 <template>
   <div class="home">
-    <a class="btn btn-outline-info m-3 float-right" data-toggle="collapse" href="#collapseDebugInfo" role="button" aria-expanded="false" aria-controls="collapseDebugInfo">
+    <a
+      class="btn btn-outline-info m-3 float-right"
+      data-toggle="collapse"
+      href="#collapseDebugInfo"
+      role="button"
+      aria-expanded="false"
+      aria-controls="collapseDebugInfo"
+    >
       &#9432;
     </a>
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
-        <p><strong>Data sending to</strong>: PATCH {{appConfig.domain}}{{appConfig.productsUrl}}/{{$route.params.id}}</p>
-        <p><strong>Using params keys</strong>: name, price, image_url, description</p>
+        <p>
+          <strong>Data from</strong>: GET {{ appConfig.domain
+          }}{{ appConfig.productsUrl }}/{{ $route.params.id }}
+        </p>
+        <p>
+          <strong>Data shape</strong>: <span v-html="wordifiedSchema"></span>
+        </p>
+        <br />
+        <p>
+          <strong>Data sending to</strong>: PATCH {{ appConfig.domain
+          }}{{ appConfig.productsUrl }}/{{ $route.params.id }}
+        </p>
+        <p>
+          <strong>Using params</strong>: <strong>name</strong>,
+          <strong>price</strong>, <strong>image_url</strong>,
+          <strong>description</strong>
+        </p>
       </div>
     </div>
     <div class="container">
-      <form v-on:submit.prevent="submit()">
+      <form v-on:submit.prevent="submit();">
         <h1>Edit product</h1>
         <ul>
           <li class="text-danger" v-for="error in errors">{{ error }}</li>
         </ul>
         <div class="form-group">
-          <label>Name:</label> 
-          <input type="text" class="form-control" v-model="product.name">
+          <label>Name:</label>
+          <input type="text" class="form-control" v-model="product.name" />
         </div>
         <div class="form-group">
-          <label>Price:</label> 
-          <input type="text" class="form-control" v-model="product.price">
+          <label>Price:</label>
+          <input type="text" class="form-control" v-model="product.price" />
         </div>
         <div class="form-group">
-          <label>Image url:</label> 
-          <input type="text" class="form-control" v-model="product.image_url">
+          <label>Image url:</label>
+          <input type="text" class="form-control" v-model="product.image_url" />
         </div>
         <div class="form-group">
-          <label>Description:</label> 
-          <input type="text" class="form-control" v-model="product.description">
+          <label>Description:</label>
+          <input
+            type="text"
+            class="form-control"
+            v-model="product.description"
+          />
         </div>
-        <input type="submit" class="btn btn-primary mr-1" value="Submit">
-        <router-link :to="{ name: 'exercise2-products-show', params: {id: product.id} }" class="btn btn-secondary">Cancel</router-link>
+        <input type="submit" class="btn btn-primary mr-1" value="Submit" />
+        <router-link
+          :to="{ name: 'exercise2-products-show', params: { id: product.id } }"
+          class="btn btn-secondary"
+          >Cancel</router-link
+        >
       </form>
     </div>
   </div>
@@ -46,6 +76,7 @@ export default {
   data: function() {
     return {
       product: { id: 0 },
+      wordifiedSchema: "",
       productSchema: {
         type: "object",
         properties: {
@@ -61,12 +92,12 @@ export default {
             alias: "price",
             type: "number"
           },
-          productsDescriptionKey: {
-            alias: "description",
-            type: "string"
-          },
           productsImageUrlKey: {
             alias: "image_url",
+            type: "string"
+          },
+          productsDescriptionKey: {
+            alias: "description",
             type: "string"
           }
         }
@@ -92,15 +123,16 @@ export default {
   },
   methods: {
     formatProductResponse: function(data) {
-      let { invalidKeys, formattedData } = validateAndFormatData(
-        data,
-        this.productSchema,
-        this.appConfig
-      );
+      let {
+        invalidKeys,
+        formattedData,
+        wordifiedSchema
+      } = validateAndFormatData(data, this.productSchema, this.appConfig);
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.product;
       } else {
+        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     },

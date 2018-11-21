@@ -6,7 +6,7 @@
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
         <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.productsUrl}}</p>
-        <p><strong>Using keys</strong>: {{appConfig.productsIdKey}}, {{appConfig.productsNameKey}}, {{appConfig.productsPriceKey}}, {{appConfig.productsImagesKey}} (an array of hashes with keys of {{this.appConfig.imagesUrlKey}}), {{appConfig.productsDescriptionKey}}</p>
+        <p><strong>Data shape</strong>: <span v-html="wordifiedSchema"></span></p>
         <br>
         <p>Note: If a "categories" key exists (where each category has a key of "name"), it will be used to display category links for each product!</p>
       </div>
@@ -49,6 +49,7 @@ export default {
   data: function() {
     return {
       products: [],
+      wordifiedSchema: "",
       productsSchema: {
         type: "array",
         items: {
@@ -115,15 +116,16 @@ export default {
         });
     },
     formatProductResponse: function(data) {
-      let { invalidKeys, formattedData } = validateAndFormatData(
-        data,
-        this.productsSchema,
-        this.appConfig
-      );
+      let {
+        invalidKeys,
+        formattedData,
+        wordifiedSchema
+      } = validateAndFormatData(data, this.productsSchema, this.appConfig);
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.products;
       } else {
+        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     },

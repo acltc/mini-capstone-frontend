@@ -59,11 +59,34 @@ function formatData(data, schema, config) {
   }
 }
 
+function wordifySchema(schema, config, pluralize = false) {
+  var result = "";
+  if (schema.type === "array") {
+    let type = pluralize ? "arrays" : "array";
+    result += `${type} of ${wordifySchema(schema.items, config, true)}`;
+  } else if (schema.type === "object") {
+    let type = pluralize ? "hashes" : "hash";
+    result += `${type} with key(s): `;
+    let subResults = [];
+    Object.keys(schema.properties).forEach(key => {
+      let subsubResult = wordifySchema(schema.properties[key], config);
+      subResults.push(
+        `<strong>${config[key]}</strong>${
+          subsubResult ? " (" + subsubResult + ")" : ""
+        }`
+      );
+    });
+    result += subResults.join(", ");
+  }
+  return result;
+}
+
 export function validateAndFormatData(data, schema, config) {
   let invalidKeys = validateData(data, schema, config);
   if (invalidKeys.length > 0) {
     return { invalidKeys };
   }
   let formattedData = formatData(data, schema, config);
-  return { invalidKeys, formattedData };
+  let wordifiedSchema = wordifySchema(schema, config);
+  return { invalidKeys, formattedData, wordifiedSchema };
 }

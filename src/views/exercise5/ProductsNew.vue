@@ -1,50 +1,80 @@
 <template>
   <div class="home">
-    <a class="btn btn-outline-info m-3 float-right" data-toggle="collapse" href="#collapseDebugInfo" role="button" aria-expanded="false" aria-controls="collapseDebugInfo">
+    <a
+      class="btn btn-outline-info m-3 float-right"
+      data-toggle="collapse"
+      href="#collapseDebugInfo"
+      role="button"
+      aria-expanded="false"
+      aria-controls="collapseDebugInfo"
+    >
       &#9432;
     </a>
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
-        <p><strong>Data sending to</strong>: POST {{appConfig.domain}}{{appConfig.productsUrl}}</p>
-        <p><strong>Using params keys</strong>: name, price, image_url, description, supplier_id</p>
-        <br>
-        <p>Note: If GET {{appConfig.domain}}{{appConfig.suppliersUrl}} exists, it will be used to display suppliers as a dropdown using the {{appConfig.suppliersNameKey}} key!</p>
+        <p>
+          <strong>Data sending to</strong>: POST {{ appConfig.domain
+          }}{{ appConfig.productsUrl }}
+        </p>
+        <p>
+          <strong>Using params</strong>: <strong>name</strong>,
+          <strong>price</strong>, <strong>image_url</strong>,
+          <strong>description</strong>, <strong>supplier_id</strong>
+        </p>
+        <br />
+        <p>
+          Note: If GET {{ appConfig.domain
+          }}{{ appConfig.suppliersUrl }} exists, it will be used to display
+          suppliers as a dropdown using the
+          {{ appConfig.suppliersNameKey }} key!
+        </p>
       </div>
     </div>
     <div class="container">
-      <form v-on:submit.prevent="submit()">
+      <form v-on:submit.prevent="submit();">
         <h1>New product</h1>
         <ul>
           <li class="text-danger" v-for="error in errors">{{ error }}</li>
         </ul>
         <div class="form-group">
-          <label>Name:</label> 
-          <input type="text" class="form-control" v-model="name">
+          <label>Name:</label>
+          <input type="text" class="form-control" v-model="name" />
         </div>
         <div class="form-group">
-          <label>Price:</label> 
-          <input type="text" class="form-control" v-model="price">
+          <label>Price:</label>
+          <input type="text" class="form-control" v-model="price" />
         </div>
         <div class="form-group">
-          <label>Image url:</label> 
-          <input type="text" class="form-control" v-model="image_url">
+          <label>Image url:</label>
+          <input type="text" class="form-control" v-model="image_url" />
         </div>
         <div class="form-group">
-          <label>Description:</label> 
-          <input type="text" class="form-control" v-model="description">
+          <label>Description:</label>
+          <input type="text" class="form-control" v-model="description" />
         </div>
         <div v-if="suppliers.length > 0" class="form-group">
-          <label>Supplier:</label> 
+          <label>Supplier:</label>
           <select v-model="supplier_id" class="form-control">
-            <option v-for="supplier in suppliers" :value="supplier.id">{{supplier.name}}</option>
+            <option v-for="supplier in suppliers" :value="supplier.id">{{
+              supplier.name
+            }}</option>
           </select>
         </div>
         <div v-else class="form-group">
-          <label>Supplier id:</label> 
-          <input type="number" min="1" class="form-control" v-model="supplier_id">
+          <label>Supplier id:</label>
+          <input
+            type="number"
+            min="1"
+            class="form-control"
+            v-model="supplier_id"
+          />
         </div>
-        <input type="submit" class="btn btn-primary mr-1" value="Submit">
-        <router-link :to="{ name: 'exercise5-products-index' }" class="btn btn-secondary">Cancel</router-link>
+        <input type="submit" class="btn btn-primary mr-1" value="Submit" />
+        <router-link
+          :to="{ name: 'exercise5-products-index' }"
+          class="btn btn-secondary"
+          >Cancel</router-link
+        >
       </form>
     </div>
   </div>

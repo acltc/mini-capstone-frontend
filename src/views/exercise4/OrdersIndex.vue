@@ -1,12 +1,24 @@
 <template>
   <div class="home">
-    <a class="btn btn-outline-info m-3 float-right" data-toggle="collapse" href="#collapseDebugInfo" role="button" aria-expanded="false" aria-controls="collapseDebugInfo">
+    <a
+      class="btn btn-outline-info m-3 float-right"
+      data-toggle="collapse"
+      href="#collapseDebugInfo"
+      role="button"
+      aria-expanded="false"
+      aria-controls="collapseDebugInfo"
+    >
       &#9432;
     </a>
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
-        <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.ordersUrl}}</p>
-        <p><strong>Using keys</strong>: {{appConfig.ordersIdKey}}, {{appConfig.ordersQuantityKey}}, {{appConfig.ordersSubtotalKey}}, {{appConfig.ordersTaxKey}}, {{appConfig.ordersTotalKey}}, {{appConfig.ordersProductKey}} (an object with a key of {{appConfig.productsNameKey}})</p>
+        <p>
+          <strong>Data from</strong>: GET {{ appConfig.domain
+          }}{{ appConfig.ordersUrl }}
+        </p>
+        <p>
+          <strong>Data shape</strong>: <span v-html="wordifiedSchema"></span>
+        </p>
       </div>
     </div>
     <div class="container">
@@ -25,13 +37,21 @@
         </thead>
         <tbody>
           <tr v-for="order in orders">
-            <td>{{order.product.name}}</td>
-            <td>{{order.quantity}}</td>
-            <td>{{order.subtotal}}</td>
-            <td>{{order.tax}}</td>
-            <td>{{order.total}}</td>
+            <td>{{ order.product.name }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.subtotal }}</td>
+            <td>{{ order.tax }}</td>
+            <td>{{ order.total }}</td>
             <td>
-              <router-link :to="{ name: 'exercise4-orders-show', params: {id: order.id}}" append class="btn btn-info">More info</router-link>
+              <router-link
+                :to="{
+                  name: 'exercise4-orders-show',
+                  params: { id: order.id }
+                }"
+                append
+                class="btn btn-info"
+                >More info</router-link
+              >
             </td>
           </tr>
         </tbody>
@@ -48,6 +68,7 @@ export default {
   data: function() {
     return {
       orders: [],
+      wordifiedSchema: "",
       ordersSchema: {
         type: "array",
         items: {
@@ -105,15 +126,16 @@ export default {
         });
     },
     formatOrderResponse: function(data) {
-      let { invalidKeys, formattedData } = validateAndFormatData(
-        data,
-        this.ordersSchema,
-        this.appConfig
-      );
+      let {
+        invalidKeys,
+        formattedData,
+        wordifiedSchema
+      } = validateAndFormatData(data, this.ordersSchema, this.appConfig);
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.orders;
       } else {
+        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     }

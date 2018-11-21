@@ -6,7 +6,7 @@
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
         <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.productsUrl}}/{{$route.params.id}}</p>
-        <p><strong>Using keys</strong>: {{appConfig.productsIdKey}}, {{appConfig.productsNameKey}}, {{appConfig.productsPriceKey}}, {{appConfig.productsImagesKey}} (an array of hashes with keys of {{appConfig.imagesUrlKey}}), {{appConfig.productsDescriptionKey}}</p>
+        <p><strong>Data shape</strong>: <span v-html="wordifiedSchema"></span></p>
         <p class="mt-4">Note: When you create a new session, if you send an "admin" key with a value of true or false, the app will only show admin specific features to admins!</p>
       </div>
     </div>
@@ -109,6 +109,7 @@ export default {
   data: function() {
     return {
       product: { id: 0 },
+      wordifiedSchema: "",
       productSchema: {
         type: "object",
         properties: {
@@ -167,15 +168,16 @@ export default {
   },
   methods: {
     formatProductResponse: function(data) {
-      let { invalidKeys, formattedData } = validateAndFormatData(
-        data,
-        this.productSchema,
-        this.appConfig
-      );
+      let {
+        invalidKeys,
+        formattedData,
+        wordifiedSchema
+      } = validateAndFormatData(data, this.productSchema, this.appConfig);
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.product;
       } else {
+        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     },

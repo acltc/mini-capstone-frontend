@@ -6,7 +6,7 @@
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
         <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.ordersUrl}}/{{$route.params.id}}</p>
-        <p><strong>Using keys</strong>: {{appConfig.ordersIdKey}}, {{appConfig.ordersSubtotalKey}}, {{appConfig.ordersTaxKey}}, {{appConfig.ordersTotalKey}}, {{appConfig.ordersCartedProductsKey}} (an array of objects with keys of quantity and product)</p>
+        <p><strong>Data shape</strong>: <span v-html="wordifiedSchema"></span></p>
       </div>
     </div>
     <div class="container">
@@ -50,12 +50,25 @@ export default {
   data: function() {
     return {
       order: { id: 0, product: {} },
+      wordifiedSchema: "",
       orderSchema: {
         type: "object",
         properties: {
           ordersIdKey: {
             alias: "id",
             type: "integer"
+          },
+          ordersSubtotalKey: {
+            alias: "subtotal",
+            type: "number"
+          },
+          ordersTaxKey: {
+            alias: "tax",
+            type: "number"
+          },
+          ordersTotalKey: {
+            alias: "total",
+            type: "number"
           },
           ordersCartedProductsKey: {
             alias: "cartedProducts",
@@ -79,18 +92,6 @@ export default {
                 }
               }
             }
-          },
-          ordersSubtotalKey: {
-            alias: "subtotal",
-            type: "number"
-          },
-          ordersTaxKey: {
-            alias: "tax",
-            type: "number"
-          },
-          ordersTotalKey: {
-            alias: "total",
-            type: "number"
           }
         }
       }
@@ -120,15 +121,16 @@ export default {
   methods: {
     formatOrderResponse: function(data) {
       console.log("formatOrderResponse", data, this.orderSchema);
-      let { invalidKeys, formattedData } = validateAndFormatData(
-        data,
-        this.orderSchema,
-        this.appConfig
-      );
+      let {
+        invalidKeys,
+        formattedData,
+        wordifiedSchema
+      } = validateAndFormatData(data, this.orderSchema, this.appConfig);
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.order;
       } else {
+        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     },

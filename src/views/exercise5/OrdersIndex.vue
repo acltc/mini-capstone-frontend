@@ -1,32 +1,46 @@
 <template>
   <div class="home">
-    <a class="btn btn-outline-info m-3 float-right" data-toggle="collapse" href="#collapseDebugInfo" role="button" aria-expanded="false" aria-controls="collapseDebugInfo">
+    <a
+      class="btn btn-outline-info m-3 float-right"
+      data-toggle="collapse"
+      href="#collapseDebugInfo"
+      role="button"
+      aria-expanded="false"
+      aria-controls="collapseDebugInfo"
+    >
       &#9432;
     </a>
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
-        <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.ordersUrl}}</p>
-        <p><strong>Using keys</strong>: {{appConfig.ordersIdKey}}, {{appConfig.ordersSubtotalKey}}, {{appConfig.ordersTaxKey}}, {{appConfig.ordersTotalKey}}, {{appConfig.ordersCartedProductsKey}} (an array of objects with keys of quantity and product)</p>
+        <p>
+          <strong>Data from</strong>: GET {{ appConfig.domain
+          }}{{ appConfig.ordersUrl }}
+        </p>
+        <p>
+          <strong>Data shape</strong>: <span v-html="wordifiedSchema"></span>
+        </p>
       </div>
     </div>
     <div class="container">
       <h1>Orders</h1>
       <p v-if="orders.length === 0">No orders placed yet!</p>
       <div v-for="order in orders">
-        <h4>Order #{{order.id}}</h4>
-        <hr>
+        <h4>Order #{{ order.id }}</h4>
+        <hr />
         <div v-for="cartedProduct in order.cartedProducts">
           <p>
-            {{cartedProduct.quantity}} x
-            <span v-if="cartedProduct.product">{{cartedProduct.product.name}}</span>
-            <span v-else>Product id {{cartedProduct.product_id}}</span>
+            {{ cartedProduct.quantity }} x
+            <span v-if="cartedProduct.product">{{
+              cartedProduct.product.name
+            }}</span>
+            <span v-else>Product id {{ cartedProduct.product_id }}</span>
           </p>
         </div>
-        <hr>
-        <p>Subtotal: {{order.subtotal}}</p>
-        <p>Tax: {{order.tax}}</p>
-        <p>Total: {{order.total}}</p>
-        <br>
+        <hr />
+        <p>Subtotal: {{ order.subtotal }}</p>
+        <p>Tax: {{ order.tax }}</p>
+        <p>Total: {{ order.total }}</p>
+        <br />
       </div>
     </div>
   </div>
@@ -40,6 +54,7 @@ export default {
   data: function() {
     return {
       orders: [],
+      wordifiedSchema: "",
       ordersSchema: {
         type: "array",
         items: {
@@ -48,6 +63,18 @@ export default {
             ordersIdKey: {
               alias: "id",
               type: "integer"
+            },
+            ordersSubtotalKey: {
+              alias: "subtotal",
+              type: "number"
+            },
+            ordersTaxKey: {
+              alias: "tax",
+              type: "number"
+            },
+            ordersTotalKey: {
+              alias: "total",
+              type: "number"
             },
             ordersCartedProductsKey: {
               alias: "cartedProducts",
@@ -71,18 +98,6 @@ export default {
                   }
                 }
               }
-            },
-            ordersSubtotalKey: {
-              alias: "subtotal",
-              type: "number"
-            },
-            ordersTaxKey: {
-              alias: "tax",
-              type: "number"
-            },
-            ordersTotalKey: {
-              alias: "total",
-              type: "number"
             }
           }
         }
@@ -109,15 +124,16 @@ export default {
         });
     },
     formatOrderResponse: function(data) {
-      let { invalidKeys, formattedData } = validateAndFormatData(
-        data,
-        this.ordersSchema,
-        this.appConfig
-      );
+      let {
+        invalidKeys,
+        formattedData,
+        wordifiedSchema
+      } = validateAndFormatData(data, this.ordersSchema, this.appConfig);
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.orders;
       } else {
+        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     }

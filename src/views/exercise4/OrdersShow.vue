@@ -1,45 +1,61 @@
 <template>
   <div class="home">
-    <a class="btn btn-outline-info m-3 float-right" data-toggle="collapse" href="#collapseDebugInfo" role="button" aria-expanded="false" aria-controls="collapseDebugInfo">
+    <a
+      class="btn btn-outline-info m-3 float-right"
+      data-toggle="collapse"
+      href="#collapseDebugInfo"
+      role="button"
+      aria-expanded="false"
+      aria-controls="collapseDebugInfo"
+    >
       &#9432;
     </a>
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
-        <p><strong>Data from</strong>: GET {{appConfig.domain}}{{appConfig.ordersUrl}}/{{$route.params.id}}</p>
-        <p><strong>Using keys</strong>: {{appConfig.ordersIdKey}}, {{appConfig.ordersQuantityKey}}, {{appConfig.ordersSubtotalKey}}, {{appConfig.ordersTaxKey}}, {{appConfig.ordersTotalKey}}, {{appConfig.ordersProductKey}} (an object with a key of {{appConfig.productsNameKey}})</p>
+        <p>
+          <strong>Data from</strong>: GET {{ appConfig.domain
+          }}{{ appConfig.ordersUrl }}/{{ $route.params.id }}
+        </p>
+        <p>
+          <strong>Data shape</strong>: <span v-html="wordifiedSchema"></span>
+        </p>
       </div>
     </div>
     <div class="container">
       <h1>Order info</h1>
       <table class="table table-hover">
         <colgroup>
-           <col span="1" style="width: 15%;">
-           <col span="1" style="width: 85%;">
+          <col span="1" style="width: 15%;" />
+          <col span="1" style="width: 85%;" />
         </colgroup>
         <tbody>
           <tr>
             <th scope="row">Product</th>
-            <td>{{order.product.name}}</td>
+            <td>{{ order.product.name }}</td>
           </tr>
           <tr>
             <th scope="row">Quantity</th>
-            <td>{{order.quantity}}</td>
+            <td>{{ order.quantity }}</td>
           </tr>
           <tr>
             <th scope="row">Subtotal</th>
-            <td>{{order.subtotal}}</td>
+            <td>{{ order.subtotal }}</td>
           </tr>
           <tr>
             <th scope="row">Tax</th>
-            <td>{{order.tax}}</td>
+            <td>{{ order.tax }}</td>
           </tr>
           <tr>
             <th scope="row">Total</th>
-            <td>{{order.total}}</td>
+            <td>{{ order.total }}</td>
           </tr>
         </tbody>
       </table>
-      <router-link :to="{ name: 'exercise4-products-index' }" class="btn btn-primary">Back to all products</router-link>
+      <router-link
+        :to="{ name: 'exercise4-products-index' }"
+        class="btn btn-primary"
+        >Back to all products</router-link
+      >
     </div>
   </div>
 </template>
@@ -66,6 +82,7 @@ export default {
   data: function() {
     return {
       order: { id: 0, product: {} },
+      wordifiedSchema: "",
       orderSchema: {
         type: "object",
         properties: {
@@ -121,15 +138,16 @@ export default {
   },
   methods: {
     formatOrderResponse: function(data) {
-      let { invalidKeys, formattedData } = validateAndFormatData(
-        data,
-        this.orderSchema,
-        this.appConfig
-      );
+      let {
+        invalidKeys,
+        formattedData,
+        wordifiedSchema
+      } = validateAndFormatData(data, this.orderSchema, this.appConfig);
       if (invalidKeys.length > 0) {
         this.$emit("showError", invalidKeys);
         return this.order;
       } else {
+        this.wordifiedSchema = wordifiedSchema;
         return formattedData;
       }
     },
