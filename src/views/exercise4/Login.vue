@@ -1,20 +1,14 @@
 <template>
   <div class="login">
     <div class="container">
-      <form v-on:submit.prevent="submit()">
+      <form v-on:submit.prevent="submit();">
         <h1>Login</h1>
         <ul>
           <li class="text-danger" v-for="error in errors">{{ error }}</li>
         </ul>
-        <div class="form-group">
-          <label>Email:</label>
-          <input type="email" class="form-control" v-model="email">
-        </div>
-        <div class="form-group">
-          <label>Password:</label>
-          <input type="password" class="form-control" v-model="password">
-        </div>
-        <input type="submit" class="btn btn-primary" value="Submit">
+        <div class="form-group"><label>Email:</label> <input type="email" class="form-control" v-model="email" /></div>
+        <div class="form-group"><label>Password:</label> <input type="password" class="form-control" v-model="password" /></div>
+        <input type="submit" class="btn btn-primary" value="Submit" />
       </form>
     </div>
   </div>
@@ -41,8 +35,7 @@ export default {
       axios
         .post("http://localhost:3000/api/sessions", params)
         .then(response => {
-          axios.defaults.headers.common["Authorization"] =
-            "Bearer " + response.data.jwt;
+          axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.jwt;
           localStorage.setItem("jwt", response.data.jwt);
           this.$router.push({ name: "exercise4-products-index" });
         })

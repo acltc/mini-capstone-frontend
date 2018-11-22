@@ -1,26 +1,10 @@
 <template>
   <div class="home">
-    <a
-      class="btn btn-outline-info m-3 float-right"
-      data-toggle="collapse"
-      href="#collapseDebugInfo"
-      role="button"
-      aria-expanded="false"
-      aria-controls="collapseDebugInfo"
-    >
-      &#9432;
-    </a>
+    <a class="btn btn-outline-info m-3 float-right" data-toggle="collapse" href="#collapseDebugInfo" role="button" aria-expanded="false" aria-controls="collapseDebugInfo"> &#9432; </a>
     <div class="collapse" id="collapseDebugInfo">
       <div class="card card-body">
-        <p>
-          <strong>Data sending to</strong>: POST {{ appConfig.domain
-          }}{{ appConfig.productsUrl }}
-        </p>
-        <p>
-          <strong>Using params</strong>: <strong>name</strong>,
-          <strong>price</strong>, <strong>image_url</strong>,
-          <strong>description</strong>
-        </p>
+        <p><strong>Data sending to</strong>: POST {{ appConfig.domain }}{{ appConfig.productsUrl }}</p>
+        <p><strong>Using params</strong>: <strong>name</strong>, <strong>price</strong>, <strong>image_url</strong>, <strong>description</strong></p>
       </div>
     </div>
     <div class="container">
@@ -29,28 +13,12 @@
         <ul>
           <li class="text-danger" v-for="error in errors">{{ error }}</li>
         </ul>
-        <div class="form-group">
-          <label>Name:</label>
-          <input type="text" class="form-control" v-model="name" />
-        </div>
-        <div class="form-group">
-          <label>Price:</label>
-          <input type="text" class="form-control" v-model="price" />
-        </div>
-        <div class="form-group">
-          <label>Image url:</label>
-          <input type="text" class="form-control" v-model="image_url" />
-        </div>
-        <div class="form-group">
-          <label>Description:</label>
-          <input type="text" class="form-control" v-model="description" />
-        </div>
+        <div class="form-group"><label>Name:</label> <input type="text" class="form-control" v-model="name" /></div>
+        <div class="form-group"><label>Price:</label> <input type="text" class="form-control" v-model="price" /></div>
+        <div class="form-group"><label>Image url:</label> <input type="text" class="form-control" v-model="image_url" /></div>
+        <div class="form-group"><label>Description:</label> <input type="text" class="form-control" v-model="description" /></div>
         <input type="submit" class="btn btn-primary mr-1" value="Submit" />
-        <router-link
-          :to="{ name: 'exercise2-products-index' }"
-          class="btn btn-secondary"
-          >Cancel</router-link
-        >
+        <router-link :to="{ name: 'exercise2-products-index' }" class="btn btn-secondary">Cancel</router-link>
       </form>
     </div>
   </div>
@@ -82,10 +50,7 @@ export default {
       axios
         .post(this.appConfig.domain + this.appConfig.productsUrl, params)
         .then(response => {
-          this.$router.push({
-            name: "exercise2-products-show",
-            params: { id: response.data.id }
-          });
+          this.$router.push({ name: "exercise2-products-show", params: { id: response.data.id } });
         })
         .catch(error => {
           this.errors = error.response.data.errors;
