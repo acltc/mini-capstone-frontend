@@ -104,7 +104,7 @@ export default {
           this.$router.push({ name: "exercise5-login" });
           return;
         }
-        this.$emit("showError", ["domain", "ordersUrl"]);
+        this.$emit("showError", ["domain", "ordersUrl"], error.request.status);
       });
   },
   methods: {
@@ -114,9 +114,7 @@ export default {
         .delete(this.appConfig.domain + this.appConfig.productsUrl + "/" + product.id)
         .then(response => {
           $("#deleteModal").modal("hide");
-          this.$router.push({
-            name: "exercise5-products-index"
-          });
+          this.$router.push({ name: "exercise5-products-index" });
         })
         .catch(error => {
           this.errors = error.response.data.errors;

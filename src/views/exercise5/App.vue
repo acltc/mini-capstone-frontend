@@ -26,7 +26,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Error with app configuration</h5>
+            <h5 class="modal-title" id="exampleModalLabel">Error: {{ errorMessage }}</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           </div>
           <div class="modal-body">
@@ -80,6 +80,7 @@ export default {
         ordersTotalKey: "total"
       },
       missingKeys: [],
+      errorMessage: "",
       searchTerms: ""
     };
   },
@@ -97,7 +98,15 @@ export default {
         }
       });
     },
-    showError: function(missingKeys) {
+    showError: function(missingKeys, statusCode = 200) {
+      const statusCodeErrorMessages = {
+        0: "Failed to connect (check if server is running with CORS configured)",
+        200: "JSON doesn't match (configure keys below)",
+        401: "Unauthorized for this page",
+        404: "Route does not exist",
+        500: "Code is crashing on server"
+      };
+      this.errorMessage = statusCodeErrorMessages[statusCode] || "Unknown error";
       this.missingKeys = missingKeys;
       $("#errorModal").modal("show");
     },

@@ -129,7 +129,7 @@ export default {
         this.originalProductData = response.data;
       })
       .catch(error => {
-        this.$emit("showError", ["domain", "productsUrl"]);
+        this.$emit("showError", ["domain", "productsUrl"], error.request.status);
       });
   },
   methods: {

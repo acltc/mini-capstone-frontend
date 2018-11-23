@@ -86,7 +86,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$emit("showError", ["domain", "productsUrl"]);
+          this.$emit("showError", ["domain", "productsUrl"], error.request.status);
         });
     }
   },

@@ -97,7 +97,7 @@ export default {
           this.products = this.formatDataToSchema(response.data) || this.products;
         })
         .catch(error => {
-          this.$emit("showError", ["domain", "productsUrl"]);
+          this.$emit("showError", ["domain", "productsUrl"], error.request.status);
         });
     },
     getPrimaryImage: function(product) {

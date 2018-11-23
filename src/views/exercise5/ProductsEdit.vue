@@ -71,7 +71,7 @@ export default {
         this.product = this.formatDataToSchema(response.data) || this.product;
       })
       .catch(error => {
-        this.$emit("showError", ["domain", "productsUrl"]);
+        this.$emit("showError", ["domain", "productsUrl"], error.request.status);
       });
   },
   methods: {

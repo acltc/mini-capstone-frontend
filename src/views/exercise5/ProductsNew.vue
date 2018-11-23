@@ -83,10 +83,7 @@ export default {
       axios
         .post(this.appConfig.domain + this.appConfig.productsUrl, params)
         .then(response => {
-          this.$router.push({
-            name: "exercise5-products-show",
-            params: { id: response.data.id }
-          });
+          this.$router.push({ name: "exercise5-products-show", params: { id: response.data.id } });
         })
         .catch(error => {
           this.errors = error.response.data.errors;
