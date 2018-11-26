@@ -16,7 +16,10 @@ export default {
         return !isNaN(data);
       }
       if (type === "string") {
-        return Object.prototype.toString.call(data) === "[object String]";
+        return (
+          Object.prototype.toString.call(data) === "[object String]" ||
+          data === null
+        );
       }
       if (type === "array") {
         return Array.isArray(data);
@@ -32,13 +35,17 @@ export default {
         invalidKeys.push(key);
       } else if (schema.type === "array") {
         data.forEach(item => {
-          invalidKeys = invalidKeys.concat(this.validateData(item, schema.items, config, key));
+          invalidKeys = invalidKeys.concat(
+            this.validateData(item, schema.items, config, key)
+          );
         });
       } else if (schema.type === "object") {
         Object.keys(schema.properties).forEach(key => {
           let subSchema = schema.properties[key];
           let subData = data[config[key]];
-          invalidKeys = invalidKeys.concat(this.validateData(subData, subSchema, config, key));
+          invalidKeys = invalidKeys.concat(
+            this.validateData(subData, subSchema, config, key)
+          );
         });
       }
       return [...new Set(invalidKeys)];
@@ -55,7 +62,11 @@ export default {
         Object.keys(schema.properties).forEach(key => {
           let subSchema = schema.properties[key];
           let subData = data[config[key]];
-          formattedData[subSchema.alias] = this.formatData(subData, subSchema, config);
+          formattedData[subSchema.alias] = this.formatData(
+            subData,
+            subSchema,
+            config
+          );
         });
         return formattedData;
       } else {
@@ -66,14 +77,22 @@ export default {
       var result = "";
       if (schema.type === "array") {
         let type = pluralize ? "arrays" : "array";
-        result += `${type} of ${this.wordifySchema(schema.items, config, true)}`;
+        result += `${type} of ${this.wordifySchema(
+          schema.items,
+          config,
+          true
+        )}`;
       } else if (schema.type === "object") {
         let type = pluralize ? "hashes" : "hash";
         result += `${type} with key(s): `;
         let subResults = [];
         Object.keys(schema.properties).forEach(key => {
           let subsubResult = this.wordifySchema(schema.properties[key], config);
-          subResults.push(`<strong>${config[key]}</strong>${subsubResult ? " (" + subsubResult + ")" : ""}`);
+          subResults.push(
+            `<strong>${config[key]}</strong>${
+              subsubResult ? " (" + subsubResult + ")" : ""
+            }`
+          );
         });
         result += subResults.join(", ");
       }
