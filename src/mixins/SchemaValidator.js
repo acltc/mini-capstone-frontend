@@ -10,7 +10,7 @@ export default {
   methods: {
     checkType: function(data, type) {
       if (type === "integer") {
-        return Number.isInteger(data);
+        return !isNaN(data); // not validating pure integers here...
       }
       if (type === "number") {
         return !isNaN(data);
