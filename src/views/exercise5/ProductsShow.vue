@@ -133,6 +133,7 @@ export default {
       .get(this.appConfig.domain + this.appConfig.productsUrl + "/" + this.$route.params.id)
       .then(response => {
         this.product = this.formatDataToSchema(response.data) || this.product;
+        this.originalProductData = response.data;
       })
       .catch(error => {
         this.$emit("showError", ["domain", "productsUrl"], error.request.status);
