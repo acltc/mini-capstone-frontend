@@ -12,8 +12,8 @@
         <li class="text-danger" v-for="error in errors">{{ error }}</li>
       </ul>
       <div class="row">
-        <div class="col-3"><img :src="product.image_url" alt="" class="w-100" /></div>
-        <div class="col-9">
+        <div class="col-md-3"><img :src="product.image_url" alt="" class="w-100" /></div>
+        <div class="col-md-9">
           <h1>{{ product.name }}</h1>
           <p class="lead">{{ product.description }}</p>
           <table class="table table-hover">

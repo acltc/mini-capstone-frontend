@@ -12,7 +12,7 @@
         <li class="text-danger" v-for="error in errors">{{ error }}</li>
       </ul>
       <div class="row">
-        <div class="col-3">
+        <div class="col-md-3">
           <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
               <li v-for="(image, index) in product.images" data-target="#carouselExampleIndicators" :data-slide-to="index" :class="{ active: index === 0 }"></li>
@@ -28,7 +28,7 @@
             </div>
           </div>
         </div>
-        <div class="col-9">
+        <div class="col-md-9">
           <h1>{{ product.name }}</h1>
           <p class="lead">{{ product.description }}</p>
           <table class="table table-hover">
