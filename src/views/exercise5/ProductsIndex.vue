@@ -106,6 +106,9 @@ export default {
   },
   filters: {
     truncate: function(text) {
+      if (text === null) {
+        return "(No description provided)";
+      }
       var maxLength = 120;
       return text.length < maxLength ? text : text.substring(0, maxLength - 3) + "...";
     }
